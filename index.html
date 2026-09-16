@@ -320,7 +320,16 @@
   .save-msg { font-size: 12.5px; color: var(--ink-soft-solid); }
   .save-msg.ok { color: #3a7d44; }
 
-  footer { text-align: center; padding: 30px 20px 50px; color: var(--ink-faint); font-size: 12px; }
+  footer { text-align: center; padding: 30px 20px 50px; color: var(--ink-faint); font-size: 12px; line-height: 2; }
+  .link-btn {
+    background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer;
+    padding: 0; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: var(--ink); }
+  .find-link-panel { width: min(420px, 100%); height: auto; max-height: 90vh; border-radius: 16px; margin: auto; align-self: center; }
+  .find-link-copy { font-size: 13.5px; color: var(--ink-soft-solid); line-height: 1.6; margin: 4px 0 18px; }
+  #find-link-scrim { align-items: center; }
+  @media (max-width: 560px) { .find-link-panel { width: 100%; height: 100%; max-height: 100%; border-radius: 0; } }
 
   @media (max-width: 560px) {
     .infogrid { grid-template-columns: 1fr; }
@@ -578,10 +587,32 @@
   </section>
 </main>
 
-<footer>AMP 211 · Module I · a classmate-built directory, not an official HBS site</footer>
+<footer>
+  AMP 211 · Module I · a classmate-built directory, not an official HBS site
+  <br><button class="link-btn" id="find-link-trigger">Need your edit link?</button>
+</footer>
 
 <div class="scrim" id="scrim" hidden>
   <div class="panel" id="panel" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="scrim" id="find-link-scrim" hidden>
+  <div class="panel find-link-panel" role="dialog" aria-modal="true" aria-label="Find your edit link">
+    <div class="panel-top"><strong>Find your edit link</strong><button class="icon-btn" id="find-link-close" aria-label="Close">✕</button></div>
+    <div class="pbody">
+      <p class="find-link-copy">Enter your AMP 211 email and we'll send your personal profile-edit link to that inbox.</p>
+      <form id="find-link-form" class="editform">
+        <div>
+          <label for="find-link-email">Email</label>
+          <input id="find-link-email" type="email" placeholder="you@amp211.hbs.edu" required autocomplete="email">
+        </div>
+        <div class="save-row">
+          <button type="submit" class="btn">Send my link</button>
+          <span class="save-msg" id="find-link-msg"></span>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
@@ -1263,6 +1294,44 @@
       });
     });
   }
+
+  // ---------- "find my edit link" ----------
+  var FIND_LINK_FN_URL = "https://rqwppsgwiflibaoxeovk.supabase.co/functions/v1/hyper-api";
+  var findLinkTrigger = document.getElementById("find-link-trigger");
+  var findLinkScrim = document.getElementById("find-link-scrim");
+  var findLinkClose = document.getElementById("find-link-close");
+  var findLinkForm = document.getElementById("find-link-form");
+  var findLinkMsg = document.getElementById("find-link-msg");
+
+  findLinkTrigger.addEventListener("click", function () {
+    findLinkScrim.hidden = false;
+    findLinkMsg.textContent = "";
+    document.getElementById("find-link-email").focus();
+  });
+  findLinkClose.addEventListener("click", function () { findLinkScrim.hidden = true; });
+  findLinkScrim.addEventListener("click", function (e) { if (e.target === findLinkScrim) findLinkScrim.hidden = true; });
+
+  findLinkForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("find-link-email").value.trim();
+    if (!email) return;
+    findLinkMsg.textContent = "Sending…"; findLinkMsg.className = "save-msg";
+    fetch(FIND_LINK_FN_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ email: email })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      findLinkMsg.textContent = data.message || "Check your inbox.";
+      findLinkMsg.className = "save-msg ok";
+    }).catch(function () {
+      findLinkMsg.textContent = "Something went wrong — try again in a moment.";
+      findLinkMsg.className = "save-msg";
+    });
+  });
 })();
 </script>
 <script>
