@@ -913,14 +913,47 @@
   }, { passive: false });
 
   var dragState = null;
+  var pinchState = null;
+  var activePointers = new Map();
+
+  function pinchGeometry() {
+    var pts = Array.from(activePointers.values()).slice(0, 2);
+    var dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    var midClientX = (pts[0].x + pts[1].x) / 2, midClientY = (pts[0].y + pts[1].y) / 2;
+    var rect = els.svg.getBoundingClientRect();
+    var mid = {
+      x: (midClientX - rect.left) / rect.width * VIEW_W,
+      y: (midClientY - rect.top) / rect.height * VIEW_H
+    };
+    return { dist: dist, mid: mid };
+  }
+
   els.svg.addEventListener("pointerdown", function (ev) {
-    if (ev.target.classList && ev.target.classList.contains("map-dot")) return;
-    dragState = { startX: ev.clientX, startY: ev.clientY, origX: mapView.x, origY: mapView.y };
-    els.svg.classList.add("grabbing");
+    activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
     els.svg.setPointerCapture(ev.pointerId);
+
+    if (activePointers.size === 2) {
+      dragState = null;
+      var geo = pinchGeometry();
+      pinchState = { startDist: geo.dist, startScale: mapView.scale };
+      els.svg.classList.remove("grabbing");
+    } else if (activePointers.size === 1) {
+      if (ev.target.classList && ev.target.classList.contains("map-dot")) return;
+      dragState = { startX: ev.clientX, startY: ev.clientY, origX: mapView.x, origY: mapView.y };
+      els.svg.classList.add("grabbing");
+    }
   });
   els.svg.addEventListener("pointermove", function (ev) {
-    if (!dragState) return;
+    if (!activePointers.has(ev.pointerId)) return;
+    activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+
+    if (pinchState && activePointers.size >= 2) {
+      var geo = pinchGeometry();
+      var newScale = pinchState.startScale * (geo.dist / Math.max(pinchState.startDist, 1));
+      zoomAt(geo.mid.x, geo.mid.y, newScale, true);
+      return;
+    }
+    if (!dragState || activePointers.size !== 1) return;
     var rect = els.svg.getBoundingClientRect();
     var scaleFactor = VIEW_W / rect.width;
     mapView.x = dragState.origX + (ev.clientX - dragState.startX) * scaleFactor;
@@ -928,9 +961,16 @@
     applyMapTransform(true);
   });
   function endDrag(ev) {
-    if (!dragState) return;
-    dragState = null;
-    els.svg.classList.remove("grabbing");
+    activePointers.delete(ev.pointerId);
+    if (activePointers.size < 2) pinchState = null;
+    if (activePointers.size === 1) {
+      // one finger lifted out of a pinch — resume panning with the remaining finger
+      var remaining = Array.from(activePointers.entries())[0];
+      dragState = { startX: remaining[1].x, startY: remaining[1].y, origX: mapView.x, origY: mapView.y };
+    } else if (activePointers.size === 0) {
+      dragState = null;
+      els.svg.classList.remove("grabbing");
+    }
   }
   els.svg.addEventListener("pointerup", endDrag);
   els.svg.addEventListener("pointercancel", endDrag);
