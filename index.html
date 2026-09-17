@@ -688,15 +688,29 @@
     });
   }
 
-  // Bios were extracted from a PDF where every wrapped *line* ended in a
-  // newline, not just real paragraph breaks. Collapse single newlines
-  // (mid-paragraph line wraps) into spaces, but keep blank-line gaps as
-  // genuine paragraph breaks.
+  // Bios were extracted from a PDF where every wrapped *line* ends in a
+  // newline — including real paragraph breaks, so there's no blank-line
+  // signal to tell them apart. Heuristic: a line noticeably shorter than
+  // the typical line in this bio almost always means it didn't reach the
+  // right margin because the paragraph ended there — treat only those as
+  // paragraph breaks, and join every other newline into a space.
   function formatBio(text) {
     if (!text) return "";
-    return text.replace(/\r\n/g, "\n").split(/\n{2,}/).map(function (para) {
-      return para.replace(/\n/g, " ").replace(/[ \t]+/g, " ").trim();
-    }).filter(Boolean).join("\n\n");
+    var lines = text.replace(/\r\n/g, "\n").split("\n")
+      .map(function (l) { return l.trim(); })
+      .filter(function (l) { return l.length > 0; });
+    if (!lines.length) return "";
+    var maxLen = Math.max.apply(null, lines.map(function (l) { return l.length; }));
+    var threshold = Math.max(maxLen * 0.62, 45);
+    var paras = [lines[0]];
+    for (var i = 1; i < lines.length; i++) {
+      if (lines[i - 1].length < threshold) {
+        paras.push(lines[i]);
+      } else {
+        paras[paras.length - 1] += " " + lines[i];
+      }
+    }
+    return paras.join("\n\n");
   }
 
   function initials(name) {
