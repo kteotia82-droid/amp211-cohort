@@ -807,6 +807,17 @@
 
   function cityKey(p) { return p.city && p.country ? p.city.trim() + "|" + p.country.trim() : null; }
 
+  // The map-cluster label a person belongs to (e.g. "Sydney area" for
+  // someone whose actual city is "Baulkham Hills, NSW"), so search can
+  // match the recognizable area name even when it differs from their
+  // literal city string.
+  function clusterLabelFor(p) {
+    var key = cityKey(p);
+    if (!key) return "";
+    var clusterKey = CITY_CLUSTER[key];
+    return clusterKey ? (CLUSTER_LABEL[clusterKey] || "") : "";
+  }
+
   function cityGroups() {
     var groups = {};
     state.people.forEach(function (p) {
@@ -1233,7 +1244,7 @@
     if (f.section && p.section !== f.section) return false;
     if (f.livingGroup && p.livingGroup !== f.livingGroup) return false;
     if (f.q) {
-      var hay = [p.name, p.org, p.title, p.industry, p.city, p.country].join(" ").toLowerCase();
+      var hay = [p.name, p.org, p.title, p.industry, p.city, p.country, clusterLabelFor(p)].join(" ").toLowerCase();
       if (hay.indexOf(f.q) === -1) return false;
     }
     return true;
