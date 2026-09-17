@@ -207,8 +207,11 @@
   .crumb-back:hover { background: var(--accent-soft); color: var(--accent); }
   #crumb-label { color: var(--ink-soft-solid); font-weight: 600; }
   .country-popover {
-    position: absolute; z-index: 10; width: 240px; max-height: 320px; overflow-y: auto;
-    -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain;
+    /* No inner max-height/scroll region: nested touch-scroll areas are
+       unreliable on mobile. It grows to full content height instead and
+       relies on the page's own scroll (which already works) to reach the
+       rest of a long list. */
+    position: absolute; z-index: 10; width: 240px;
     background: var(--surface-raised); border: 1px solid var(--line-strong); border-radius: 13px;
     box-shadow: var(--shadow); padding: 12px; animation: popin .12s ease;
   }
@@ -365,6 +368,9 @@
       <input id="search" type="search" placeholder="Search name, company, industry, city…" autocomplete="off" />
     </div>
     <span class="count-pill" id="count-pill">173 classmates</span>
+    <a class="icon-link help-link" href="mailto:hbsamp211@gmail.com?subject=AMP%20211%20Cohort%20site%20help" title="Need help? Email us" aria-label="Need help? Email us">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2.5-3 4.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/></svg>
+    </a>
   </div>
   <div class="filters">
     <span class="flabel">Filter</span>
