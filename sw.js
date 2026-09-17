@@ -1,46 +1,34 @@
-const CACHE_NAME = "amp211-shell-v1";
-const SHELL_FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const CACHE_NAME = "amp211-shell-v2";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES)).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
-// Network-first for the app shell (so classmate data and edits stay live),
-// falling back to the cached shell when offline. Photos cache-first since
-// they never change once published.
+// Deliberately does NOT intercept the HTML document or app scripts — this
+// site is under active development, and a page that's ever slightly stale
+// (self-edit, new data, new features) is worse than one that just always
+// loads fresh from the network like a normal page. Only photos are cached,
+// since they never change once published and are the one thing worth
+// saving bandwidth/offline access for.
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
+  if (url.pathname.indexOf("/photos/") === -1) return;
 
-  if (url.pathname.indexOf("/photos/") !== -1) {
-    event.respondWith(
-      caches.match(req).then((cached) => cached || fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        return res;
-      }))
-    );
-    return;
-  }
-
-  if (url.origin === self.location.origin) {
-    event.respondWith(
-      fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        return res;
-      }).catch(() => caches.match(req).then((cached) => cached || caches.match("./index.html")))
-    );
-  }
+  event.respondWith(
+    caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+      return res;
+    }))
+  );
 });
