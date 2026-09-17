@@ -688,6 +688,17 @@
     });
   }
 
+  // Bios were extracted from a PDF where every wrapped *line* ended in a
+  // newline, not just real paragraph breaks. Collapse single newlines
+  // (mid-paragraph line wraps) into spaces, but keep blank-line gaps as
+  // genuine paragraph breaks.
+  function formatBio(text) {
+    if (!text) return "";
+    return text.replace(/\r\n/g, "\n").split(/\n{2,}/).map(function (para) {
+      return para.replace(/\n/g, " ").replace(/[ \t]+/g, " ").trim();
+    }).filter(Boolean).join("\n\n");
+  }
+
   function initials(name) {
     var parts = name.trim().split(/\s+/);
     return ((parts[0] || "")[0] || "") + ((parts[parts.length - 1] || "")[0] || "");
@@ -1290,7 +1301,7 @@
   }
 
   function detailHtml(p, isOwner) {
-    var bio = (p.bio || "").trim();
+    var bio = formatBio(p.bio);
     return '' +
       '<div class="panel-top"><strong>Profile</strong><button class="icon-btn close" aria-label="Close">✕</button></div>' +
       '<div class="pbody">' +
@@ -1323,7 +1334,7 @@
       '<div><label for="f-country">Country</label><input id="f-country2" name="country" value="' + esc(p.country || "") + '"></div></div>' +
       '<div class="form-row2"><div><label for="f-industry2">Industry</label><input id="f-industry2" name="industry" value="' + esc(p.industry || "") + '"></div>' +
       '<div><label for="f-linkedin">LinkedIn URL</label><input id="f-linkedin" name="linkedin" value="' + esc(p.linkedin || "") + '"></div></div>' +
-      '<div><label for="f-bio">Bio</label><textarea id="f-bio" name="bio">' + esc(p.bio || "") + '</textarea></div>' +
+      '<div><label for="f-bio">Bio</label><textarea id="f-bio" name="bio">' + esc(formatBio(p.bio)) + '</textarea></div>' +
       '<div class="save-row"><button type="submit" class="btn">Save changes</button><button type="button" class="btn ghost cancel-edit">Cancel</button><span class="save-msg" id="save-msg"></span></div>' +
       '</form>';
     els.panel.querySelector(".cancel-edit").addEventListener("click", function () { slot.innerHTML = ""; view.style.display = ""; });
