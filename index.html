@@ -961,15 +961,19 @@
 
   els.svg.addEventListener("pointerdown", function (ev) {
     activePointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
-    els.svg.setPointerCapture(ev.pointerId);
 
     if (activePointers.size === 2) {
       dragState = null;
+      els.svg.setPointerCapture(ev.pointerId);
       var geo = pinchGeometry();
       pinchState = { startDist: geo.dist, startScale: mapView.scale };
       els.svg.classList.remove("grabbing");
     } else if (activePointers.size === 1) {
+      // Starting on a dot: leave this as a plain click/tap (don't capture
+      // the pointer or arm a drag) so the dot's own click handler fires.
+      // A second finger landing afterwards can still start a pinch above.
       if (ev.target.classList && ev.target.classList.contains("map-dot")) return;
+      els.svg.setPointerCapture(ev.pointerId);
       dragState = { startX: ev.clientX, startY: ev.clientY, origX: mapView.x, origY: mapView.y };
       els.svg.classList.add("grabbing");
     }
