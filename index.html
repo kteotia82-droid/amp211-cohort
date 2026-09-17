@@ -801,8 +801,10 @@
   // Nudges apart dots that would otherwise overlap (geographically close
   // cities, or countries with close centroids) so every dot stays visible
   // and clickable. Pure position adjustment — never touches real coordinates.
-  function declutter(items, iterations) {
+  function declutter(items, iterations, maxDrift) {
     iterations = iterations || 8;
+    maxDrift = maxDrift || 40;
+    items.forEach(function (it) { it.ox = it.x; it.oy = it.y; });
     for (var iter = 0; iter < iterations; iter++) {
       for (var i = 0; i < items.length; i++) {
         for (var j = i + 1; j < items.length; j++) {
@@ -818,6 +820,18 @@
           b.x += ux * overlap; b.y += uy * overlap;
         }
       }
+      // Never let a dot drift far from its true geographic position, even
+      // in very dense clusters (e.g. the NYC/NJ metro) where compounding
+      // repulsion across many neighbors could otherwise eject it far away.
+      items.forEach(function (it) {
+        var ddx = it.x - it.ox, ddy = it.y - it.oy;
+        var d = Math.sqrt(ddx * ddx + ddy * ddy);
+        if (d > maxDrift) {
+          var s = maxDrift / d;
+          it.x = it.ox + ddx * s;
+          it.y = it.oy + ddy * s;
+        }
+      });
     }
   }
 
