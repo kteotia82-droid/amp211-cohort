@@ -97,6 +97,7 @@
   /* ---------- Header ---------- */
   header.top {
     position: sticky; top: 0; z-index: 30;
+    padding-top: env(safe-area-inset-top);
     background: color-mix(in srgb, var(--bg) 88%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
@@ -259,16 +260,21 @@
   .scrim[hidden] { display: none; }
   .panel {
     width: min(560px, 100%); height: 100%; background: var(--bg); overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     box-shadow: -12px 0 40px rgba(0,0,0,0.18);
     animation: slidein .18s ease;
   }
   @media (prefers-reduced-motion: reduce) { .panel { animation: none; } }
   @keyframes slidein { from { transform: translateX(24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  .panel-top { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 2; }
-  .icon-btn { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink); }
+  .panel-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top));
+    border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 2;
+  }
+  .icon-btn { border: 1px solid var(--line-strong); background: var(--surface); border-radius: 8px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink); flex: none; }
   .icon-btn:hover { border-color: var(--accent-soft-line); }
 
-  .pbody { padding: 8px 28px 48px; }
+  .pbody { padding: 8px 28px calc(48px + env(safe-area-inset-bottom)); }
   .phead { display: flex; gap: 16px; align-items: flex-start; margin: 12px 0 20px; }
   .phead img { width: 84px; height: 84px; border-radius: 16px; object-fit: cover; background: var(--chip-bg); flex: none; }
   .phead h3 { font-size: 24px; font-weight: 600; }
@@ -848,6 +854,15 @@
     return groups;
   }
 
+  // How many CSS pixels one viewBox unit renders as right now. The SVG
+  // scales to fill its container's width, so a viewBox-unit size that
+  // looks right on a ~760px-wide desktop pane renders roughly half as
+  // large on a ~375px-wide phone unless we compensate for it.
+  function pxPerUnit() {
+    var w = els.svg.getBoundingClientRect().width;
+    return (w > 0 ? w : VIEW_W) / VIEW_W;
+  }
+
   function renderMapDots() {
     if (mapLevel === "city" && selectedCountry) {
       renderCityDots(selectedCountry);
@@ -926,14 +941,17 @@
     els.breadcrumb.hidden = false;
     els.crumbLabel.textContent = flagOf(country) + " " + shortOf(country);
     els.dots.innerHTML = "";
+    // Target constant on-screen pixel sizes regardless of device width,
+    // then let them grow (partially) with zoom on top of that.
+    var unit = pxPerUnit();
     var items = keys.map(function (key) {
       var pos = groups[key].pos;
       var n = groups[key].people.length;
-      var r = (3.2 + Math.sqrt(n) * 2.3) / Math.max(mapView.scale * 0.55, 1);
+      var r = (3.6 / unit + Math.sqrt(n) * 2.3) / Math.max(mapView.scale * 0.55, 1);
       return { key: key, x: pos.x, y: pos.y, r: r, n: n };
     });
     declutter(items, 16);
-    var labelSize = 7 / Math.max(mapView.scale * 0.55, 1);
+    var labelSize = (8.5 / unit) / Math.max(mapView.scale * 0.55, 1);
     items.forEach(function (item) {
       var key = item.key;
       var group = groups[key];
