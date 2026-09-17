@@ -166,6 +166,7 @@
   .map-dot-halo { fill: var(--accent); opacity: 0; pointer-events: none; }
   .hbs-badge-ring { fill: var(--ink); stroke: var(--surface); stroke-width: 1.4; }
   .hbs-badge-letter { font-family: "Fraunces", serif; font-weight: 600; fill: var(--surface); text-anchor: middle; dominant-baseline: central; }
+  .city-label { font-family: "IBM Plex Sans", sans-serif; font-weight: 500; fill: var(--ink-soft-solid); pointer-events: none; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
   .map-dot-halo.active, .map-dot-halo.pulse { opacity: 0.18; }
   .map-hint {
     margin: 8px 2px 0; font-size: 11.5px; color: var(--ink-faint);
@@ -859,6 +860,7 @@
       return { key: key, x: pos.x, y: pos.y, r: r, n: n };
     });
     declutter(items, 16);
+    var labelSize = 6.5 / Math.max(mapView.scale * 0.55, 1);
     items.forEach(function (item) {
       var key = item.key;
       var group = groups[key];
@@ -870,6 +872,14 @@
       dot.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openCityPopover(key, dot); } });
       els.dots.appendChild(dot.halo);
       els.dots.appendChild(dot);
+
+      var label = document.createElementNS(SVG_NS, "text");
+      label.setAttribute("x", item.x + item.r + 3);
+      label.setAttribute("y", item.y + labelSize * 0.35);
+      label.setAttribute("font-size", labelSize);
+      label.setAttribute("class", "city-label");
+      label.textContent = group.city;
+      els.dots.appendChild(label);
     });
   }
 
