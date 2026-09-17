@@ -153,8 +153,8 @@
     background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
     padding: 14px 14px 6px; box-shadow: var(--shadow); position: relative;
   }
-  .mapwrap { position: relative; width: 100%; overflow: hidden; border-radius: 10px; }
-  #world-svg { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; }
+  .mapwrap { position: relative; width: 100%; }
+  #world-svg { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; overflow: hidden; border-radius: 10px; }
   #world-svg.grabbing { cursor: grabbing; }
   #map-content { transition: transform .5s cubic-bezier(.2,.7,.3,1); }
   #map-content.no-anim { transition: none; }
@@ -208,6 +208,7 @@
   #crumb-label { color: var(--ink-soft-solid); font-weight: 600; }
   .country-popover {
     position: absolute; z-index: 10; width: 240px; max-height: 320px; overflow-y: auto;
+    -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain;
     background: var(--surface-raised); border: 1px solid var(--line-strong); border-radius: 13px;
     box-shadow: var(--shadow); padding: 12px; animation: popin .12s ease;
   }
