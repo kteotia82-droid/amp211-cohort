@@ -808,7 +808,7 @@
           var a = items[i], b = items[j];
           var dx = b.x - a.x, dy = b.y - a.y;
           var dist = Math.sqrt(dx * dx + dy * dy);
-          var minDist = a.r + b.r + 1.5;
+          var minDist = a.r + b.r + 6;
           if (dist >= minDist) continue;
           if (dist < 0.001) { dx = 0.1; dy = 0.1; dist = 0.14; }
           var overlap = (minDist - dist) / 2;
@@ -832,7 +832,7 @@
       var n = groups[country].people.length;
       return { country: country, x: pos.x, y: pos.y, r: 3.6 + Math.sqrt(n) * 2.6, n: n };
     });
-    declutter(items, 8);
+    declutter(items, 14);
     items.forEach(function (item) {
       var country = item.country;
       var dot = makeDot(item, item.r, false);
@@ -858,7 +858,7 @@
       var r = (3.2 + Math.sqrt(n) * 2.3) / Math.max(mapView.scale * 0.55, 1);
       return { key: key, x: pos.x, y: pos.y, r: r, n: n };
     });
-    declutter(items, 10);
+    declutter(items, 16);
     items.forEach(function (item) {
       var key = item.key;
       var group = groups[key];
