@@ -797,12 +797,41 @@
     if (p) { openedOwnProfile = true; openDetail(p.id); }
   }
 
+  // Consolidated industry groups for the filter dropdown only — the raw
+  // per-person industry tag (shown on their profile) is never changed.
+  var INDUSTRY_GROUPS = [
+    ["Financial Services", ["Finance", "Banking", "Insurance"]],
+    ["Health Care & Pharma", ["Health Care", "Pharmaceuticals", "Biotechnology"]],
+    ["Energy & Utilities", ["Energy", "Utilities"]],
+    ["Industrials & Manufacturing", ["Manufacturing", "Engineering", "Chemicals", "Machinery", "Raw Materials"]],
+    ["Technology & Telecom", ["Technology", "Telecommunications", "Electronics"]],
+    ["Government & Public Sector", ["Government", "Not For Profit", "Education"]],
+    ["Consumer, Retail & Food", ["Retail", "Consumer Products", "Food & Beverage", "Apparel"]],
+    ["Professional Services & Consulting", ["Professional Services", "Consulting"]],
+    ["Transportation & Logistics", ["Transportation", "Shipping"]],
+    ["Construction & Real Estate", ["Construction", "Real Estate"]],
+    ["Agriculture & Environmental", ["Agriculture", "Environmental"]],
+    ["Other", ["Other"]]
+  ];
+  var INDUSTRY_TO_GROUP = {};
+  INDUSTRY_GROUPS.forEach(function (g) {
+    g[1].forEach(function (raw) { INDUSTRY_TO_GROUP[raw] = g[0]; });
+  });
+  function industryGroupFor(p) {
+    return (p.industry && INDUSTRY_TO_GROUP[p.industry]) || p.industry || "";
+  }
+
   // ---------- filter option population ----------
   function populateFilterOptions() {
     fillSelect(els.fCountry, uniqueSorted(state.people, "country"), "Country");
-    fillSelect(els.fIndustry, uniqueSorted(state.people, "industry"), "Industry");
+    fillSelect(els.fIndustry, uniqueSortedBy(state.people, industryGroupFor), "Industry");
     fillSelect(els.fSection, uniqueSorted(state.people, "section"), "Section", "Section ");
     fillSelect(els.fLivingGroup, uniqueSorted(state.people, "livingGroup"), "Living Group");
+  }
+  function uniqueSortedBy(arr, fn) {
+    var set = {};
+    arr.forEach(function (p) { var v = fn(p); if (v) set[v] = true; });
+    return Object.keys(set).sort();
   }
   function uniqueSorted(arr, key) {
     var set = {};
@@ -1261,11 +1290,11 @@
   // filter, since the map's own drill-down IS the country dimension.
   function passesNonCountryFilters(p) {
     var f = state.filters;
-    if (f.industry && p.industry !== f.industry) return false;
+    if (f.industry && industryGroupFor(p) !== f.industry) return false;
     if (f.section && p.section !== f.section) return false;
     if (f.livingGroup && p.livingGroup !== f.livingGroup) return false;
     if (f.q) {
-      var hay = [p.name, p.org, p.title, p.industry, p.city, p.country, clusterLabelFor(p)].join(" ").toLowerCase();
+      var hay = [p.name, p.org, p.title, p.industry, industryGroupFor(p), p.city, p.country, clusterLabelFor(p)].join(" ").toLowerCase();
       if (hay.indexOf(f.q) === -1) return false;
     }
     return true;
