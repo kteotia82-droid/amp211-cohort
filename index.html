@@ -794,7 +794,11 @@
   function maybeOpenOwnProfile() {
     if (openedOwnProfile || !state.myPid) return;
     var p = state.people.find(function (x) { return x.id === state.myPid; });
-    if (p) { openedOwnProfile = true; openDetail(p.id); }
+    if (p) {
+      openedOwnProfile = true;
+      openDetail(p.id);
+      db.rpc("log_edit_link_visit", { p_id: p.id, p_token: state.myTok }).catch(function () {});
+    }
   }
 
   // Consolidated industry groups for the filter dropdown only — the raw
