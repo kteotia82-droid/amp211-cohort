@@ -603,6 +603,7 @@
 
 <footer>
   AMP 211 · Fall 2026 · a classmate-built directory, not an official HBS site
+  <span id="visit-count"></span>
   <br><button class="link-btn" id="find-link-trigger">Need your edit link?</button>
 </footer>
 
@@ -740,6 +741,26 @@
 
   function boot() {
     loadPeople(function () { maybeOpenOwnProfile(); });
+    trackVisit();
+  }
+
+  // Counts at most one visit per device per day (via localStorage), so
+  // repeat reloads in one sitting don't inflate the number. Either way,
+  // fetch the current total so the footer always shows something.
+  function trackVisit() {
+    var el = document.getElementById("visit-count");
+    var today = new Date().toISOString().slice(0, 10);
+    var last = null;
+    try { last = localStorage.getItem("amp211_last_visit"); } catch (e) {}
+
+    var call = last === today ? db.rpc("get_page_views") : db.rpc("increment_page_views");
+    call.then(function (res) {
+      if (res.error || !el) return;
+      el.textContent = " · " + res.data + " visits";
+      if (last !== today) {
+        try { localStorage.setItem("amp211_last_visit", today); } catch (e) {}
+      }
+    });
   }
 
   function loadPeople(cb) {
