@@ -304,8 +304,22 @@
   .infoitem .v a { color: var(--accent); text-decoration: none; }
   .infoitem .v a:hover { text-decoration: underline; }
 
-  .bio { font-size: 14.5px; line-height: 1.7; white-space: pre-line; }
+  .bio { font-size: 14.5px; line-height: 1.7; }
   .bio.empty-bio { color: var(--ink-faint); font-style: italic; }
+  .bio p { margin: 0 0 14px; }
+  .bio p:last-child { margin-bottom: 0; }
+  .bio ul { margin: 0 0 14px; padding-left: 20px; }
+  .bio ul:last-child { margin-bottom: 0; }
+  .bio li { margin-bottom: 4px; }
+  .bio strong { font-weight: 700; }
+
+  .bio-toolbar { display: flex; gap: 6px; margin: 4px 0 6px; }
+  .tb-btn {
+    border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink);
+    border-radius: 7px; padding: 4px 10px; font-size: 12.5px; cursor: pointer;
+  }
+  .tb-btn:hover { background: var(--accent-soft); }
+  .bio-hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
 
   .edit-banner {
     background: var(--accent-soft); border: 1px solid var(--accent-soft-line); color: var(--ink);
@@ -727,6 +741,30 @@
     return paras.join("\n\n");
   }
 
+  // Bios typed by a person via the edit form (bioManual) have real,
+  // intentional newlines — those are trusted literally. Legacy
+  // PDF-imported bios go through the reflow heuristic above first, since
+  // their newlines carry no paragraph signal at all.
+  function inlineFormat(escapedText) {
+    return escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  }
+  function renderBioHtml(p) {
+    var raw = (p.bio || "").trim();
+    if (!raw) return "";
+    var text = p.bioManual ? raw : formatBio(raw);
+    var paras = text.replace(/\r\n/g, "\n").split(/\n\s*\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+    return paras.map(function (para) {
+      var lines = para.split("\n").map(function (l) { return l.trim(); }).filter(function (l) { return l.length; });
+      var isBulletBlock = lines.length > 0 && lines.every(function (l) { return /^[-•]\s+/.test(l); });
+      if (isBulletBlock) {
+        return "<ul>" + lines.map(function (l) {
+          return "<li>" + inlineFormat(esc(l.replace(/^[-•]\s+/, ""))) + "</li>";
+        }).join("") + "</ul>";
+      }
+      return "<p>" + lines.map(function (l) { return inlineFormat(esc(l)); }).join("<br>") + "</p>";
+    }).join("");
+  }
+
   function initials(name) {
     var parts = name.trim().split(/\s+/);
     return ((parts[0] || "")[0] || "") + ((parts[parts.length - 1] || "")[0] || "");
@@ -771,7 +809,8 @@
           id: row.id, name: row.name, title: row.title, org: row.org,
           city: row.city, country: row.country, industry: row.industry,
           section: row.section, livingGroup: row.living_group,
-          linkedin: row.linkedin, bio: row.bio, email: row.email, photo: row.photo, phone: row.phone
+          linkedin: row.linkedin, bio: row.bio, email: row.email, photo: row.photo, phone: row.phone,
+          bioManual: !!row.bio_manual
         };
       });
       people.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
@@ -1429,7 +1468,7 @@
   }
 
   function detailHtml(p, isOwner) {
-    var bio = formatBio(p.bio);
+    var bioHtml = renderBioHtml(p);
     return '' +
       '<div class="panel-top"><strong>Profile</strong><button class="icon-btn close" aria-label="Close">✕</button></div>' +
       '<div class="pbody">' +
@@ -1447,7 +1486,7 @@
         '<div class="infoitem"><div class="k">LinkedIn</div><div class="v">' + (p.linkedin ? '<a href="' + esc(linkedinUrl(p.linkedin)) + '" target="_blank" rel="noopener">View profile ↗</a>' : "—") + '</div></div>' +
         '<div class="infoitem"><div class="k">Phone</div><div class="v">' + (p.phone ? '<a href="' + esc(telUrl(p.phone)) + '">' + esc(p.phone) + '</a>' : "—") + '</div></div>' +
       '</div>' +
-      '<div class="bio' + (bio ? '' : ' empty-bio') + '">' + esc(bio || "No bio added yet." + (isOwner ? " Click “Edit profile” to write one." : "")) + '</div>' +
+      '<div class="bio' + (bioHtml ? '' : ' empty-bio') + '">' + (bioHtml || esc("No bio added yet." + (isOwner ? " Click “Edit profile” to write one." : ""))) + '</div>' +
       '</div></div>';
   }
 
@@ -1464,11 +1503,44 @@
       '<div class="form-row2"><div><label for="f-industry2">Industry</label><input id="f-industry2" name="industry" value="' + esc(p.industry || "") + '"></div>' +
       '<div><label for="f-linkedin">LinkedIn URL</label><input id="f-linkedin" name="linkedin" value="' + esc(p.linkedin || "") + '"></div></div>' +
       '<div class="form-row2"><div><label for="f-phone">Phone (with country code, e.g. +1 201 595 9513)</label><input id="f-phone" name="phone" value="' + esc(p.phone || "") + '"></div><div></div></div>' +
-      '<div><label for="f-bio">Bio</label><textarea id="f-bio" name="bio">' + esc(formatBio(p.bio)) + '</textarea></div>' +
+      '<div><label for="f-bio">Bio</label>' +
+        '<div class="bio-toolbar">' +
+          '<button type="button" class="tb-btn" id="tb-bold" title="Bold"><strong>B</strong></button>' +
+          '<button type="button" class="tb-btn" id="tb-bullet" title="Bullet list">• List</button>' +
+        '</div>' +
+        '<textarea id="f-bio" name="bio">' + esc(p.bioManual ? (p.bio || "") : formatBio(p.bio)) + '</textarea>' +
+        '<div class="bio-hint">Leave a blank line between paragraphs. Select text and click B to **bold** it, or click List to start a bullet list.</div>' +
+      '</div>' +
       '<div class="save-row"><button type="submit" class="btn">Save changes</button><button type="button" class="btn ghost cancel-edit">Cancel</button><span class="save-msg" id="save-msg"></span></div>' +
       '</form>';
     els.panel.querySelector(".cancel-edit").addEventListener("click", function () { slot.innerHTML = ""; view.style.display = ""; });
+    wireBioToolbar(els.panel.querySelector("#f-bio"), els.panel.querySelector("#tb-bold"), els.panel.querySelector("#tb-bullet"));
     wireForm(els.panel.querySelector("form.editform"), p);
+  }
+
+  function wireBioToolbar(textarea, boldBtn, bulletBtn) {
+    boldBtn.addEventListener("click", function () {
+      var s = textarea.selectionStart, e = textarea.selectionEnd;
+      var val = textarea.value;
+      var selected = val.slice(s, e) || "bold text";
+      textarea.value = val.slice(0, s) + "**" + selected + "**" + val.slice(e);
+      textarea.focus();
+      textarea.selectionStart = s + 2;
+      textarea.selectionEnd = s + 2 + selected.length;
+    });
+    bulletBtn.addEventListener("click", function () {
+      var s = textarea.selectionStart, e = textarea.selectionEnd;
+      var val = textarea.value;
+      var lineStart = val.lastIndexOf("\n", s - 1) + 1;
+      var lineEnd = val.indexOf("\n", e);
+      if (lineEnd === -1) lineEnd = val.length;
+      var block = val.slice(lineStart, lineEnd);
+      var newBlock = block.split("\n").map(function (l) {
+        return /^[-•]\s+/.test(l) ? l : "- " + l;
+      }).join("\n");
+      textarea.value = val.slice(0, lineStart) + newBlock + val.slice(lineEnd);
+      textarea.focus();
+    });
   }
 
   function wireForm(form, p) {
@@ -1502,6 +1574,7 @@
         if (res.error) { msg.textContent = "Couldn't save. Try again."; return; }
         msg.textContent = "Saved ✓"; msg.className = "save-msg ok";
         Object.assign(p, update);
+        p.bioManual = true;
       });
     });
   }
