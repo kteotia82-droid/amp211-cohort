@@ -887,6 +887,24 @@
   function industryGroupFor(p) {
     return (p.industry && INDUSTRY_TO_GROUP[p.industry]) || p.industry || "";
   }
+  // Options for the edit form's industry <select>, grouped by roll-up —
+  // a fixed list (not free text) so new edits stay within the vocabulary
+  // the filter dropdown already knows how to roll up.
+  function industryOptionsHtml(selected) {
+    var html = INDUSTRY_GROUPS.map(function (g) {
+      var opts = g[1].map(function (raw) {
+        return '<option value="' + esc(raw) + '"' + (raw === selected ? " selected" : "") + '>' + esc(raw) + "</option>";
+      }).join("");
+      return '<optgroup label="' + esc(g[0]) + '">' + opts + "</optgroup>";
+    }).join("");
+    // A legacy value that isn't in the canonical list (shouldn't happen going
+    // forward, but keeps an old free-text value visible instead of silently
+    // dropping it) gets appended as its own option so nothing is lost on save.
+    if (selected && !INDUSTRY_TO_GROUP[selected]) {
+      html += '<option value="' + esc(selected) + '" selected>' + esc(selected) + " (other)</option>";
+    }
+    return html;
+  }
 
   // ---------- filter option population ----------
   function populateFilterOptions() {
@@ -1524,7 +1542,7 @@
       '<div><label for="f-org">Organization</label><input id="f-org" name="org" value="' + esc(p.org || "") + '"></div></div>' +
       '<div class="form-row2"><div><label for="f-city">City</label><input id="f-city" name="city" value="' + esc(p.city || "") + '"></div>' +
       '<div><label for="f-country">Country</label><input id="f-country2" name="country" value="' + esc(p.country || "") + '"></div></div>' +
-      '<div class="form-row2"><div><label for="f-industry2">Industry</label><input id="f-industry2" name="industry" value="' + esc(p.industry || "") + '"></div>' +
+      '<div class="form-row2"><div><label for="f-industry2">Industry</label><select id="f-industry2" name="industry"><option value="">Select industry</option>' + industryOptionsHtml(p.industry) + '</select></div>' +
       '<div><label for="f-linkedin">LinkedIn URL</label><input id="f-linkedin" name="linkedin" value="' + esc(p.linkedin || "") + '"></div></div>' +
       '<div class="form-row2"><div><label for="f-phone">Phone (with country code, e.g. +1 201 595 9513)</label><input id="f-phone" name="phone" value="' + esc(p.phone || "") + '"></div><div></div></div>' +
       '<div><label for="f-bio">Bio</label>' +
