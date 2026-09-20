@@ -312,8 +312,11 @@
   .bio ul:last-child { margin-bottom: 0; }
   .bio li { margin-bottom: 4px; }
   .bio strong { font-weight: 700; }
+  .bio em { font-style: italic; }
+  .bio u { text-decoration: underline; }
+  .bio ul ul { margin: 4px 0 0; padding-left: 18px; }
 
-  .bio-toolbar { display: flex; gap: 6px; margin: 4px 0 6px; }
+  .bio-toolbar { display: flex; gap: 6px; margin: 4px 0 6px; flex-wrap: wrap; }
   .tb-btn {
     border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink);
     border-radius: 7px; padding: 4px 10px; font-size: 12.5px; cursor: pointer;
@@ -746,21 +749,42 @@
   // PDF-imported bios go through the reflow heuristic above first, since
   // their newlines carry no paragraph signal at all.
   function inlineFormat(escapedText) {
-    return escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    var t = escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/__(.+?)__/g, "<u>$1</u>");
+    t = t.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    return t;
+  }
+  function bulletIndentLevel(line) {
+    var m = line.match(/^(\s*)[-•]/);
+    var ws = m ? m[1].replace(/\t/g, "  ") : "";
+    return ws.length;
+  }
+  function buildBulletHtml(rawLines) {
+    var raw = rawLines.map(function (l) {
+      return { level: bulletIndentLevel(l), text: l.replace(/^\s*[-•]\s+/, "") };
+    });
+    var minLevel = Math.min.apply(null, raw.map(function (i) { return i.level; }));
+    var items = raw.map(function (i) { return { level: Math.floor((i.level - minLevel) / 2), text: i.text }; });
+    var html = "", stack = [];
+    items.forEach(function (item) {
+      while (stack.length && stack[stack.length - 1] > item.level) { html += "</li></ul>"; stack.pop(); }
+      if (!stack.length || stack[stack.length - 1] < item.level) { html += "<ul>"; stack.push(item.level); }
+      else { html += "</li>"; }
+      html += "<li>" + inlineFormat(esc(item.text));
+    });
+    while (stack.length) { html += "</li></ul>"; stack.pop(); }
+    return html;
   }
   function renderBioHtml(p) {
     var raw = (p.bio || "").trim();
     if (!raw) return "";
     var text = p.bioManual ? raw : formatBio(raw);
-    var paras = text.replace(/\r\n/g, "\n").split(/\n\s*\n/).map(function (s) { return s.trim(); }).filter(Boolean);
-    return paras.map(function (para) {
-      var lines = para.split("\n").map(function (l) { return l.trim(); }).filter(function (l) { return l.length; });
-      var isBulletBlock = lines.length > 0 && lines.every(function (l) { return /^[-•]\s+/.test(l); });
-      if (isBulletBlock) {
-        return "<ul>" + lines.map(function (l) {
-          return "<li>" + inlineFormat(esc(l.replace(/^[-•]\s+/, ""))) + "</li>";
-        }).join("") + "</ul>";
-      }
+    var blocks = text.replace(/\r\n/g, "\n").split(/\n\s*\n/).map(function (b) { return b.replace(/^\n+|\n+$/g, ""); }).filter(function (b) { return b.trim().length; });
+    return blocks.map(function (block) {
+      var rawLines = block.split("\n").filter(function (l) { return l.trim().length; });
+      var isBulletBlock = rawLines.length > 0 && rawLines.every(function (l) { return /^\s*[-•]\s+/.test(l); });
+      if (isBulletBlock) return buildBulletHtml(rawLines);
+      var lines = rawLines.map(function (l) { return l.trim(); });
       return "<p>" + lines.map(function (l) { return inlineFormat(esc(l)); }).join("<br>") + "</p>";
     }).join("");
   }
@@ -1506,40 +1530,50 @@
       '<div><label for="f-bio">Bio</label>' +
         '<div class="bio-toolbar">' +
           '<button type="button" class="tb-btn" id="tb-bold" title="Bold"><strong>B</strong></button>' +
+          '<button type="button" class="tb-btn" id="tb-italic" title="Italic"><em>I</em></button>' +
+          '<button type="button" class="tb-btn" id="tb-underline" title="Underline"><u>U</u></button>' +
           '<button type="button" class="tb-btn" id="tb-bullet" title="Bullet list">• List</button>' +
+          '<button type="button" class="tb-btn" id="tb-indent" title="Indent (nest a bullet)">→ Indent</button>' +
         '</div>' +
         '<textarea id="f-bio" name="bio">' + esc(p.bioManual ? (p.bio || "") : formatBio(p.bio)) + '</textarea>' +
-        '<div class="bio-hint">Leave a blank line between paragraphs. Select text and click B to **bold** it, or click List to start a bullet list.</div>' +
+        '<div class="bio-hint">Leave a blank line between paragraphs. Select text and use B / I / U to format it, click List to start bullets, and Indent to nest a bullet under the one above.</div>' +
       '</div>' +
       '<div class="save-row"><button type="submit" class="btn">Save changes</button><button type="button" class="btn ghost cancel-edit">Cancel</button><span class="save-msg" id="save-msg"></span></div>' +
       '</form>';
     els.panel.querySelector(".cancel-edit").addEventListener("click", function () { slot.innerHTML = ""; view.style.display = ""; });
-    wireBioToolbar(els.panel.querySelector("#f-bio"), els.panel.querySelector("#tb-bold"), els.panel.querySelector("#tb-bullet"));
+    wireBioToolbar(els.panel.querySelector("#f-bio"), els.panel.querySelector("#edit-slot"));
     wireForm(els.panel.querySelector("form.editform"), p);
   }
 
-  function wireBioToolbar(textarea, boldBtn, bulletBtn) {
-    boldBtn.addEventListener("click", function () {
+  function wireBioToolbar(textarea, scope) {
+    function wrapSelection(before, after) {
       var s = textarea.selectionStart, e = textarea.selectionEnd;
       var val = textarea.value;
-      var selected = val.slice(s, e) || "bold text";
-      textarea.value = val.slice(0, s) + "**" + selected + "**" + val.slice(e);
+      var selected = val.slice(s, e) || "text";
+      textarea.value = val.slice(0, s) + before + selected + after + val.slice(e);
       textarea.focus();
-      textarea.selectionStart = s + 2;
-      textarea.selectionEnd = s + 2 + selected.length;
-    });
-    bulletBtn.addEventListener("click", function () {
+      textarea.selectionStart = s + before.length;
+      textarea.selectionEnd = s + before.length + selected.length;
+    }
+    function eachSelectedLine(fn) {
       var s = textarea.selectionStart, e = textarea.selectionEnd;
       var val = textarea.value;
       var lineStart = val.lastIndexOf("\n", s - 1) + 1;
       var lineEnd = val.indexOf("\n", e);
       if (lineEnd === -1) lineEnd = val.length;
       var block = val.slice(lineStart, lineEnd);
-      var newBlock = block.split("\n").map(function (l) {
-        return /^[-•]\s+/.test(l) ? l : "- " + l;
-      }).join("\n");
+      var newBlock = block.split("\n").map(fn).join("\n");
       textarea.value = val.slice(0, lineStart) + newBlock + val.slice(lineEnd);
       textarea.focus();
+    }
+    scope.querySelector("#tb-bold").addEventListener("click", function () { wrapSelection("**", "**"); });
+    scope.querySelector("#tb-italic").addEventListener("click", function () { wrapSelection("*", "*"); });
+    scope.querySelector("#tb-underline").addEventListener("click", function () { wrapSelection("__", "__"); });
+    scope.querySelector("#tb-bullet").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return /^\s*[-•]\s+/.test(l) ? l : "- " + l; });
+    });
+    scope.querySelector("#tb-indent").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return "  " + l; });
     });
   }
 
