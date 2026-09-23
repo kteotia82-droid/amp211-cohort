@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Weekly Digest Preview — AMP 211 Beta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #faf7f2; --surface: #ffffff; --ink: #211c17; --ink-soft: #6b6256; --ink-faint: #948a7c;
+    --line: #e6ddd0; --line-strong: #d8cbb8; --accent: #8a2432; --accent-soft: #f6e4e0; --accent-soft-line: #e9c3bd;
+    --help-bg: #fdf1e0; --help-line: #ecd3a3; --help-ink: #97591a;
+    --share-bg: #e5eef8; --share-line: #bcd2ea; --share-ink: #1c5c96;
+    --warm-bg: #fbeaea; --warm-line: #f0c9c9; --warm-ink: #a33a3a;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17130f; --surface: #211b15; --ink: #f1e9dd; --ink-soft: #c3b6a3; --ink-faint: #8d8171;
+      --line: #382f24; --line-strong: #4a3f30; --accent: #e2836e; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+      --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+      --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+      --warm-bg: #2b1717; --warm-line: #4a2626; --warm-ink: #e0837e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17130f; --surface: #211b15; --ink: #f1e9dd; --ink-soft: #c3b6a3; --ink-faint: #8d8171;
+    --line: #382f24; --line-strong: #4a3f30; --accent: #e2836e; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+    --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+    --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+    --warm-bg: #2b1717; --warm-line: #4a2626; --warm-ink: #e0837e;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; margin: 0; padding: 0 16px; }
+  .wrap { max-width: 620px; margin: 0 auto; padding-block: 30px 50px; }
+
+  .proto-bar {
+    padding: 10px 16px; background: var(--accent-soft); border: 1px solid var(--accent-soft-line); border-radius: 10px;
+    font-size: 12.5px; color: var(--ink-soft); margin-bottom: 22px;
+  }
+  .proto-bar b { color: var(--accent); }
+
+  .email-shell { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--surface); }
+  .email-header { background: var(--accent); color: #fff; padding: 22px 26px; }
+  .email-header .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+  .email-header h1 { font-family: "Fraunces", serif; font-size: 21px; font-weight: 600; margin: 6px 0 0; text-wrap: balance; }
+  .email-header .dek { font-size: 13px; opacity: .9; margin-top: 4px; }
+
+  .email-body { padding: 8px 26px 26px; }
+
+  .section { margin-top: 26px; }
+  .section:first-child { margin-top: 22px; }
+  .section-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .section-head h2 { font-family: "Fraunces", serif; font-size: 15.5px; font-weight: 600; }
+  .section-head .count { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--ink-faint); }
+  .section-note { font-size: 12px; color: var(--ink-faint); margin: -4px 0 12px; }
+
+  .digest-post {
+    border: 1px solid var(--line); border-left: 3px solid var(--line-strong); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .digest-post.urgent { border-left-color: var(--warm-ink); background: linear-gradient(to right, var(--warm-bg), var(--surface) 40px); }
+  .digest-post.kind-help:not(.urgent) { border-left-color: var(--help-ink); background: linear-gradient(to right, var(--help-bg), var(--surface) 40px); }
+  .digest-post.kind-share { border-left-color: var(--share-ink); background: linear-gradient(to right, var(--share-bg), var(--surface) 40px); }
+  .digest-post .who { font-size: 12.5px; font-weight: 600; }
+  .digest-post .who .when { font-weight: 400; color: var(--ink-faint); margin-left: 5px; }
+  .digest-post .snippet { font-size: 13.5px; line-height: 1.5; margin-top: 4px; color: var(--ink); }
+  .digest-post .meta-row { display: flex; gap: 10px; margin-top: 8px; align-items: center; }
+  .pill { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .pill.urgent { background: var(--warm-ink); color: #fff; }
+  .pill.traction { background: var(--ink); color: var(--bg); }
+  .stat { font-size: 11.5px; color: var(--ink-faint); }
+
+  .cta-row { text-align: center; margin-top: 28px; }
+  .cta-btn {
+    display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600;
+    font-size: 13.5px; padding: 11px 26px; border-radius: 10px;
+  }
+
+  .email-footer {
+    border-top: 1px solid var(--line); padding: 16px 26px; font-size: 11.5px; color: var(--ink-faint); text-align: center;
+  }
+  .email-footer a { color: var(--ink-faint); }
+
+  .meta-line { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 14px; }
+
+  .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin: 38px 0 10px; text-align: center; }
+
+  .confirm-card {
+    border: 1px solid var(--line); border-radius: 16px; background: var(--surface); padding: 30px 28px; text-align: center;
+  }
+  .confirm-card .glyph { font-size: 26px; margin-bottom: 10px; }
+  .confirm-card h2 { font-family: "Fraunces", serif; font-size: 19px; margin-bottom: 8px; }
+  .confirm-card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; max-width: 40ch; margin: 0 auto; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .btn { font-family: "IBM Plex Sans", sans-serif; font-size: 13.5px; font-weight: 600; border-radius: 9px; border: none; padding: 10px 20px; cursor: pointer; }
+  .btn.primary { background: var(--warm-ink); color: #fff; }
+  .btn.ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line-strong); }
+  .confirm-card.success .glyph { color: var(--share-ink); }
+
+  .edit-form-mock {
+    border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 20px 22px; margin-top: 8px;
+  }
+  .edit-form-mock .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); margin-bottom: 4px; }
+  .edit-form-mock .fake-input {
+    border: 1px solid var(--line-strong); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; color: var(--ink-soft);
+    background: var(--bg); margin-bottom: 14px;
+  }
+  .opt-out-row {
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 10px; margin-top: 4px;
+  }
+  .opt-out-row input { width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+  .opt-out-row label { font-size: 13.5px; cursor: pointer; flex: 1; }
+  .opt-out-row .sub { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="proto-bar">🧪 <b>Prototype</b> — a mockup of the weekly digest email, not a real send. Content below is sample data from the Exchange prototype.</div>
+
+  <div class="meta-line">Subject line ↓</div>
+  <div style="text-align:center; font-family:'IBM Plex Mono',monospace; font-size:13px; margin-top:4px; margin-bottom:18px;">
+    3 things happening on The Exchange this week
+  </div>
+
+  <div class="email-shell">
+    <div class="email-header">
+      <div class="eyebrow">AMP 211 · The Exchange</div>
+      <h1>Here's what you missed this week</h1>
+      <div class="dek">A quick recap — two people are still waiting on help, and one thread is picking up steam.</div>
+    </div>
+
+    <div class="email-body">
+      <div class="section">
+        <div class="section-head">
+          <h2>🤝 Still looking for help</h2>
+          <span class="count">2</span>
+        </div>
+        <div class="section-note">No replies yet — even a quick intro or a name to point them to helps.</div>
+
+        <div class="digest-post kind-help urgent">
+          <div class="who">Reshmee Soni <span class="when">· Tuesday</span></div>
+          <div class="snippet">You could help me with an intro to anyone in structured trade finance in East Africa — a client of mine is exploring a receivables facility&hellip;</div>
+          <div class="meta-row"><span class="pill urgent">No replies yet</span></div>
+        </div>
+
+        <div class="digest-post kind-help urgent">
+          <div class="who">Yuhei Iwata <span class="when">· Wednesday</span></div>
+          <div class="snippet">You could help me with feedback on a product roadmap for an enterprise AI tool before I pitch it internally next month&hellip;</div>
+          <div class="meta-row"><span class="pill urgent">No replies yet</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h2>🔥 Getting traction</h2>
+          <span class="count">1</span>
+        </div>
+
+        <div class="digest-post kind-share">
+          <div class="who">Anita Hoskins <span class="when">· Monday</span></div>
+          <div class="snippet">I wanted to share that a few of us are doing a Sydney meetup the first weekend of November — casual dinner, no agenda&hellip;</div>
+          <div class="meta-row">
+            <span class="pill traction">2 replies</span>
+            <span class="stat">7 said "I can help"</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h2>📣 Also new this week</h2>
+          <span class="count">1</span>
+        </div>
+
+        <div class="digest-post kind-share">
+          <div class="who">Mounir Frem <span class="when">· Thursday</span></div>
+          <div class="snippet">I wanted to share this piece on GCC healthcare investment trends — relevant for anyone tracking the region&hellip;</div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a class="cta-btn" href="#">Open The Exchange</a>
+      </div>
+    </div>
+
+    <div class="email-footer">
+      AMP 211 Cohort · a classmate-built directory, not an official HBS site<br>
+      You're getting this because you're part of the AMP 211 cohort — sent only when there's something new.<br>
+      <a href="#unsubscribe" id="unsub-link">Unsubscribe from this digest</a>
+    </div>
+  </div>
+
+  <div class="section-label">↓ what clicking "Unsubscribe" leads to ↓</div>
+
+  <div class="confirm-card" id="view-confirm" hidden>
+    <div class="glyph">🔕</div>
+    <h2>Stop the weekly digest?</h2>
+    <p>You'll stop getting the weekly Exchange recap. You can turn it back on anytime from your profile's edit page.</p>
+    <div class="confirm-actions">
+      <button class="btn primary" id="btn-confirm-unsub">Yes, unsubscribe me</button>
+      <button class="btn ghost" id="btn-cancel-unsub">Never mind, keep me subscribed</button>
+    </div>
+  </div>
+
+  <div class="confirm-card success" id="view-confirmed" hidden>
+    <div class="glyph">✓</div>
+    <h2>You're unsubscribed</h2>
+    <p>You won't get the weekly digest anymore. You'll still see everything if you visit The Exchange directly, and you can resubscribe anytime from your profile's edit page.</p>
+  </div>
+
+  <div class="section-label">↓ the same setting, from the profile edit page ↓</div>
+
+  <div class="edit-form-mock">
+    <div class="field-label">Bio</div>
+    <div class="fake-input">Senior executive with 20 years leading global payments teams…</div>
+    <div class="field-label">Phone</div>
+    <div class="fake-input">+1 201 595 9513</div>
+    <div class="opt-out-row">
+      <input type="checkbox" id="mock-optout-check">
+      <label for="mock-optout-check">
+        Don't send me the weekly Exchange digest
+        <div class="sub">You'll still see everything if you visit The Exchange directly.</div>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+  var viewConfirm = document.getElementById("view-confirm");
+  var viewConfirmed = document.getElementById("view-confirmed");
+
+  function showConfirmIfHashed() {
+    if (location.hash === "#unsubscribe") {
+      viewConfirm.hidden = false;
+      viewConfirmed.hidden = true;
+      viewConfirm.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+  document.getElementById("unsub-link").addEventListener("click", function () {
+    setTimeout(showConfirmIfHashed, 0);
+  });
+  window.addEventListener("hashchange", showConfirmIfHashed);
+
+  document.getElementById("btn-confirm-unsub").addEventListener("click", function () {
+    viewConfirm.hidden = true;
+    viewConfirmed.hidden = false;
+    viewConfirmed.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  document.getElementById("btn-cancel-unsub").addEventListener("click", function () {
+    viewConfirm.hidden = true;
+  });
+
+  showConfirmIfHashed();
+</script>
+
+</body>
+</html>

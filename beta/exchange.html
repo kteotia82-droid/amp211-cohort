@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>The Exchange — AMP 211 Beta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --surface: #ffffff;
+    --surface-raised: #ffffff;
+    --ink: #211c17;
+    --ink-soft: #6b625685;
+    --ink-soft-solid: #6b6256;
+    --ink-faint: #948a7c;
+    --line: #e6ddd0;
+    --line-strong: #d8cbb8;
+    --accent: #8a2432;
+    --accent-ink: #ffffff;
+    --accent-soft: #f6e4e0;
+    --accent-soft-line: #e9c3bd;
+    --help-bg: #fdf1e0;
+    --help-line: #ecd3a3;
+    --help-ink: #97591a;
+    --share-bg: #e5eef8;
+    --share-line: #bcd2ea;
+    --share-ink: #1c5c96;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17130f; --surface: #211b15; --surface-raised: #271f18;
+      --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+      --line: #382f24; --line-strong: #4a3f30;
+      --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+      --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+      --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17130f; --surface: #211b15; --surface-raised: #271f18;
+    --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+    --line: #382f24; --line-strong: #4a3f30;
+    --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+    --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+    --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    margin: 0; padding: 0 16px; padding-block: 0;
+  }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  /* ---- proto notice ---- */
+  .proto-bar {
+    max-width: 900px; margin: 14px auto 0; padding: 10px 16px;
+    background: var(--accent-soft); border: 1px solid var(--accent-soft-line); border-radius: 10px;
+    font-size: 12.5px; color: var(--ink-soft-solid); display: flex; gap: 8px; align-items: center;
+  }
+  .proto-bar b { color: var(--accent); }
+
+  /* ---- header + tabs (shows how Exchange slots into the existing site) ---- */
+  .top { max-width: 900px; margin: 0 auto; padding-top: 18px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 14px;
+  }
+  .brand h1 { font-size: 20px; font-weight: 600; }
+  .brand .sub { font-size: 12.5px; color: var(--ink-faint); margin-top: 1px; }
+
+  .tabs { display: flex; gap: 4px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+  .tab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 14px; font-weight: 500; color: var(--ink-faint);
+    background: none; border: none; padding: 10px 4px; margin-right: 22px; cursor: pointer;
+    border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 7px;
+  }
+  .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: none; }
+  .tab.active .dot.new { display: none; }
+  .tab .new-badge {
+    font-family: "IBM Plex Mono", monospace; font-size: 10px; background: var(--accent); color: var(--accent-ink);
+    border-radius: 20px; padding: 1px 6px; letter-spacing: .02em;
+  }
+
+  main { max-width: 900px; margin: 0 auto; padding-bottom: 60px; }
+
+  /* ---- directory tab (condensed placeholder, just to show it's still there) ---- */
+  .directory-preview {
+    margin-top: 26px; border: 1px solid var(--line); border-radius: 14px; padding: 26px;
+    background: var(--surface); text-align: center;
+  }
+  .directory-preview .glyph { font-size: 28px; margin-bottom: 10px; }
+  .directory-preview p { color: var(--ink-soft-solid); font-size: 14px; max-width: 420px; margin: 8px auto 0; }
+  .directory-preview .mini-cards { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+  .mini-card {
+    width: 84px; padding: 10px 8px; border: 1px solid var(--line); border-radius: 10px; font-size: 10.5px;
+    color: var(--ink-faint); text-align: center;
+  }
+  .mini-card .av { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-soft); margin: 0 auto 6px; }
+
+  /* ---- exchange intro ---- */
+  .exchange-intro { margin-top: 24px; }
+  .exchange-intro h2 { font-size: 25px; }
+  .exchange-intro p { font-size: 14px; color: var(--ink-soft-solid); margin-top: 6px; max-width: 60ch; }
+
+  /* ---- starter buttons ---- */
+  .starters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  @media (max-width: 620px) { .starters { grid-template-columns: 1fr; } }
+  .starter-btn {
+    text-align: left; border: 1px solid var(--line-strong); border-left: 4px solid var(--line-strong);
+    background: var(--surface); border-radius: 14px;
+    padding: 16px 18px 16px 16px; cursor: pointer; font-family: "IBM Plex Sans", sans-serif;
+    transition: border-color .15s, transform .1s;
+  }
+  .starter-btn:active { transform: scale(.99); }
+  .starter-btn .icon { font-size: 20px; }
+  .starter-btn .lede { font-family: "Fraunces", serif; font-size: 17px; font-weight: 500; margin-top: 8px; color: var(--ink); }
+  .starter-btn .hint { font-size: 12.5px; color: var(--ink-faint); margin-top: 4px; }
+  .starter-btn.share {
+    border-left-color: var(--share-ink); background: linear-gradient(to right, var(--share-bg), var(--surface) 56px);
+  }
+  .starter-btn.share:hover { border-color: var(--share-ink); }
+  .starter-btn.help {
+    border-left-color: var(--help-ink); background: linear-gradient(to right, var(--help-bg), var(--surface) 56px);
+  }
+  .starter-btn.help:hover { border-color: var(--help-ink); }
+
+  /* ---- composer (hidden until a starter is clicked) ---- */
+  .composer {
+    margin-top: 14px; border: 1px solid var(--accent-soft-line); background: var(--accent-soft);
+    border-radius: 14px; padding: 16px 18px;
+  }
+  .composer[hidden] { display: none; }
+  .composer .lede-line { font-family: "Fraunces", serif; font-size: 16px; margin-bottom: 8px; }
+  .post-toolbar { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .tb-btn {
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+    border-radius: 7px; padding: 4px 10px; font-size: 12.5px; cursor: pointer; font-family: "IBM Plex Sans", sans-serif;
+  }
+  .tb-btn:hover { background: var(--accent-soft); }
+  .composer-hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .composer textarea {
+    width: 100%; min-height: 70px; border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 12px;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 14px; background: var(--surface); color: var(--ink);
+    resize: vertical;
+  }
+  .composer-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .tag-select {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 6px 10px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  }
+  .btn {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 13.5px; font-weight: 600; border-radius: 9px; border: none;
+    padding: 8px 16px; cursor: pointer; background: var(--accent); color: var(--accent-ink);
+  }
+  .btn.ghost { background: transparent; color: var(--ink-soft-solid); border: 1px solid var(--line-strong); font-weight: 500; }
+
+  /* ---- filters row ---- */
+  .filter-row { display: flex; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+  .filter-row .label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin-right: 4px; }
+  .chip {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 20px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-soft-solid); cursor: pointer;
+  }
+  .chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .kind-filter-pill {
+    margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px;
+    background: var(--accent-soft); border: 1px solid var(--accent-soft-line); color: var(--ink);
+    border-radius: 20px; padding: 5px 8px 5px 14px;
+  }
+  .kind-filter-pill button {
+    border: none; background: var(--ink); color: var(--bg); border-radius: 50%; width: 18px; height: 18px;
+    font-size: 12px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ---- feed ---- */
+  .feed { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .post {
+    border: 1px solid var(--line); border-left: 4px solid var(--line-strong); border-radius: 14px;
+    padding: 18px 20px 18px 18px; background: var(--surface);
+  }
+  .post.kind-share { border-left-color: var(--share-ink); background: linear-gradient(to right, var(--share-bg), var(--surface) 56px); }
+  .post.kind-help { border-left-color: var(--help-ink); background: linear-gradient(to right, var(--help-bg), var(--surface) 56px); }
+  .post-top { display: flex; gap: 12px; }
+  .av {
+    width: 38px; height: 38px; border-radius: 50%; flex: none;
+    background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-family: "Fraunces", serif; font-weight: 600; font-size: 13px;
+  }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-meta .name-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .post-meta .name { font-weight: 600; font-size: 14px; }
+  .post-meta .when { font-size: 12px; color: var(--ink-faint); }
+  .kind-pill {
+    font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 20px; letter-spacing: .01em;
+  }
+  .kind-pill.share { background: var(--share-bg); color: var(--share-ink); }
+  .kind-pill.help { background: var(--help-bg); color: var(--help-ink); }
+  .post-body { font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+  .post-body p { margin: 0 0 10px; }
+  .post-body p:last-child { margin-bottom: 0; }
+  .post-body ul { margin: 0 0 10px; padding-left: 20px; }
+  .post-body ul ul { margin: 4px 0 0; padding-left: 18px; }
+  .post-body li { margin-bottom: 3px; }
+  .post-body strong { font-weight: 700; }
+  .post-body em { font-style: italic; }
+  .post-body u { text-decoration: underline; }
+  .post-link {
+    color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft-line);
+    word-break: break-all;
+  }
+  .post-link:hover { border-bottom-color: var(--accent); }
+  .post-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--bg); border: 1px solid var(--line);
+    color: var(--ink-soft-solid);
+  }
+  .post-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .action-btn {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; color: var(--ink-soft-solid); background: none;
+    border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 2px;
+  }
+  .action-btn:hover { color: var(--ink); }
+  .action-btn.can-help.active { color: var(--help-ink); font-weight: 600; }
+  .action-btn svg { width: 15px; height: 15px; }
+  .action-btn.wa:hover { color: var(--share-ink); }
+
+  /* ---- comments ---- */
+  .comments { margin-top: 12px; display: none; flex-direction: column; gap: 10px; }
+  .comments.open { display: flex; }
+  .comment { display: flex; gap: 10px; }
+  .comment .av { width: 28px; height: 28px; font-size: 11px; }
+  .comment-body {
+    background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; flex: 1;
+  }
+  .comment-body .cname { font-weight: 600; font-size: 12.5px; margin-right: 6px; }
+  .comment-form { display: flex; gap: 8px; margin-top: 4px; }
+  .comment-form input {
+    flex: 1; border: 1px solid var(--line-strong); border-radius: 20px; padding: 7px 14px; font-size: 13px;
+    font-family: "IBM Plex Sans", sans-serif; background: var(--surface); color: var(--ink);
+  }
+  .comment-form button {
+    border: none; background: var(--ink); color: var(--bg); border-radius: 20px; padding: 0 16px; font-size: 12.5px;
+    cursor: pointer; font-weight: 600;
+  }
+
+  footer { text-align: center; font-size: 12px; color: var(--ink-faint); padding: 30px 0 10px; }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">🧪 <b>Prototype</b> — this is a mockup to react to, not the live site. Posting, replying and reactions work locally in your browser only (nothing saves or is shared yet).</div>
+
+<div class="top">
+  <div class="brand">
+    <div class="mark">211</div>
+    <div>
+      <h1>AMP&nbsp;211 Cohort</h1>
+      <div class="sub">Fall 2026 · Tata Hall</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab" id="tab-directory">🗺️ Directory</button>
+    <button class="tab active" id="tab-exchange">💬 The Exchange</button>
+  </div>
+</div>
+
+<main>
+  <section id="view-directory" hidden>
+    <div class="directory-preview">
+      <div class="glyph">🗺️</div>
+      <h3>The directory stays exactly as it is today</h3>
+      <p>Search, world map, filters, profiles — The Exchange is a second tab alongside it, not a replacement.</p>
+      <div class="mini-cards">
+        <div class="mini-card"><div class="av"></div>Bruno Rias</div>
+        <div class="mini-card"><div class="av"></div>Ayumi M.</div>
+        <div class="mini-card"><div class="av"></div>Leigh T.</div>
+        <div class="mini-card"><div class="av"></div>Rémy J.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-exchange">
+    <div class="exchange-intro">
+      <h2>The Exchange</h2>
+      <p>A place to share something with the cohort, or ask for help — an intro, advice, a favor. Post as yourself, reply to anyone.</p>
+    </div>
+
+    <div class="starters">
+      <button class="starter-btn share" id="btn-start-share">
+        <span class="icon">📣</span>
+        <div class="lede">I wanted to share&hellip;</div>
+        <div class="hint">An idea, a resource, something happening</div>
+      </button>
+      <button class="starter-btn help" id="btn-start-help">
+        <span class="icon">🤝</span>
+        <div class="lede">You could help me with&hellip;</div>
+        <div class="hint">An intro, advice, expertise you need</div>
+      </button>
+    </div>
+
+    <div class="composer" id="composer" hidden>
+      <div class="lede-line" id="composer-lede"></div>
+      <div class="post-toolbar">
+        <button type="button" class="tb-btn" id="tb-bold" title="Bold"><strong>B</strong></button>
+        <button type="button" class="tb-btn" id="tb-italic" title="Italic"><em>I</em></button>
+        <button type="button" class="tb-btn" id="tb-underline" title="Underline"><u>U</u></button>
+        <button type="button" class="tb-btn" id="tb-bullet" title="Bullet list">&bull; List</button>
+        <button type="button" class="tb-btn" id="tb-indent" title="Indent (nest a bullet)">&rarr; Indent</button>
+      </div>
+      <textarea id="composer-text" placeholder="Finish the thought… paste a link if there's one to share"></textarea>
+      <div class="composer-hint">Leave a blank line between paragraphs. Paste a URL and it'll show as a link. Select text and use B / I / U to format it.</div>
+      <div class="composer-row">
+        <select class="tag-select" id="composer-tag">
+          <option value="">No tag</option>
+          <option>Financial Services</option>
+          <option>Health Care &amp; Pharma</option>
+          <option>Energy &amp; Utilities</option>
+          <option>Industrials &amp; Manufacturing</option>
+          <option>Technology &amp; Telecom</option>
+          <option>Government &amp; Public Sector</option>
+          <option>Consumer, Retail &amp; Food</option>
+          <option>Professional Services &amp; Consulting</option>
+          <option>Transportation &amp; Logistics</option>
+          <option>Construction &amp; Real Estate</option>
+          <option>Agriculture &amp; Environmental</option>
+          <option>General / Social</option>
+        </select>
+        <span style="flex:1"></span>
+        <button class="btn ghost" id="composer-cancel">Cancel</button>
+        <button class="btn" id="composer-post">Post</button>
+      </div>
+    </div>
+
+    <div class="filter-row" id="filter-row">
+      <span class="label">Filter</span>
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="Financial Services">Financial Services</button>
+      <button class="chip" data-filter="Health Care & Pharma">Health Care &amp; Pharma</button>
+      <button class="chip" data-filter="Energy & Utilities">Energy &amp; Utilities</button>
+      <button class="chip" data-filter="Industrials & Manufacturing">Industrials &amp; Manufacturing</button>
+      <button class="chip" data-filter="Technology & Telecom">Technology &amp; Telecom</button>
+      <button class="chip" data-filter="Government & Public Sector">Government &amp; Public Sector</button>
+      <button class="chip" data-filter="Consumer, Retail & Food">Consumer, Retail &amp; Food</button>
+      <button class="chip" data-filter="Professional Services & Consulting">Professional Services &amp; Consulting</button>
+      <button class="chip" data-filter="Transportation & Logistics">Transportation &amp; Logistics</button>
+      <button class="chip" data-filter="Construction & Real Estate">Construction &amp; Real Estate</button>
+      <button class="chip" data-filter="Agriculture & Environmental">Agriculture &amp; Environmental</button>
+      <button class="chip" data-filter="General / Social">General / Social</button>
+    </div>
+    <div class="kind-filter-pill" id="kind-filter-pill" hidden></div>
+
+    <div class="feed" id="feed"></div>
+  </section>
+</main>
+
+<footer>The Exchange · a prototype for the AMP 211 cohort directory</footer>
+
+<script>
+  var seedPosts = [
+    {
+      kind: "help", name: "Reshmee Soni", initials: "RS", when: "2h ago", ts: 2000,
+      tag: "Financial Services",
+      text: "You could help me with an intro to anyone in structured trade finance in East Africa — a client of mine is exploring a receivables facility and I'd love a second opinion from someone closer to the market.",
+      canHelp: 3, canHelpActive: false,
+      comments: [
+        { name: "Ashok Ramchandran", initials: "AR", text: "I've got a contact at a DFI covering that region — sending you a note directly." }
+      ]
+    },
+    {
+      kind: "share", name: "Anita Hoskins", initials: "AH", when: "6h ago", ts: 6000,
+      tag: "General / Social",
+      text: "I wanted to share that a few of us are doing a Sydney meetup the first weekend of November — casual dinner, no agenda. Drop a comment if you're around and I'll set up the group chat.",
+      canHelp: 7, canHelpActive: true,
+      comments: [
+        { name: "Nerilee Telford", initials: "NT", text: "In! Count me in for this." },
+        { name: "Timur Tez", initials: "TT", text: "Same — first weekend works for me." }
+      ]
+    },
+    {
+      kind: "help", name: "Yuhei Iwata", initials: "YI", when: "1d ago", ts: 24000,
+      tag: "Technology & Telecom",
+      text: "You could help me with feedback on a product roadmap for an enterprise AI tool before I pitch it internally next month — looking for 2-3 people with SaaS PM backgrounds willing to do a 30-min review call.",
+      canHelp: 2, canHelpActive: false, comments: []
+    },
+    {
+      kind: "share", name: "Mounir Frem", initials: "MF", when: "2d ago", ts: 48000,
+      tag: "Health Care & Pharma",
+      text: "I wanted to share this piece on GCC healthcare investment trends: https://www.mckinsey.com/industries/healthcare/our-insights — relevant for anyone tracking the region, and a decent primer if you're newer to the space.",
+      canHelp: 4, canHelpActive: false, comments: []
+    }
+  ];
+
+  var state = JSON.parse(JSON.stringify(seedPosts));
+  var activeFilter = "all";   // "all" | an industry group string
+  var kindFilter = null;      // null | "share" | "help" — set by the starter buttons
+  var composerKind = null;
+
+  var feedEl = document.getElementById("feed");
+  var tabDirectory = document.getElementById("tab-directory");
+  var tabExchange = document.getElementById("tab-exchange");
+  var viewDirectory = document.getElementById("view-directory");
+  var viewExchange = document.getElementById("view-exchange");
+
+  tabDirectory.addEventListener("click", function () {
+    tabDirectory.classList.add("active"); tabExchange.classList.remove("active");
+    viewDirectory.hidden = false; viewExchange.hidden = true;
+  });
+  tabExchange.addEventListener("click", function () {
+    tabExchange.classList.add("active"); tabDirectory.classList.remove("active");
+    viewExchange.hidden = false; viewDirectory.hidden = true;
+  });
+
+  var composer = document.getElementById("composer");
+  var composerLede = document.getElementById("composer-lede");
+  var composerText = document.getElementById("composer-text");
+
+  document.getElementById("btn-start-share").addEventListener("click", function () { openComposer("share"); setKindFilter("share"); });
+  document.getElementById("btn-start-help").addEventListener("click", function () { openComposer("help"); setKindFilter("help"); });
+  document.getElementById("composer-cancel").addEventListener("click", function () { closeComposer(true); });
+
+  function openComposer(kind) {
+    composerKind = kind;
+    composerLede.textContent = kind === "share" ? "I wanted to share…" : "You could help me with…";
+    composerText.value = "";
+    composer.hidden = false;
+    composerText.focus();
+    composer.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  function closeComposer(fromCancel) { composer.hidden = true; composerKind = null; if (fromCancel) clearKindFilter(); }
+
+  var kindPill = document.getElementById("kind-filter-pill");
+  function setKindFilter(kind) {
+    kindFilter = kind;
+    render();
+  }
+  function clearKindFilter() { kindFilter = null; render(); }
+
+  document.getElementById("composer-post").addEventListener("click", function () {
+    var text = composerText.value.trim();
+    if (!text) { composerText.focus(); return; }
+    var tag = document.getElementById("composer-tag").value;
+    var lede = composerKind === "share" ? "I wanted to share " : "You could help me with ";
+    var minTs = state.reduce(function (m, p) { return Math.min(m, p.ts); }, 0);
+    state.unshift({
+      kind: composerKind, name: "Kush Teotia", initials: "KT", when: "just now", ts: minTs - 1,
+      tag: tag, text: lede + text, canHelp: 0, canHelpActive: false, comments: []
+    });
+    closeComposer();
+    render();
+  });
+
+  document.querySelectorAll(".chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      document.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+      chip.classList.add("active");
+      activeFilter = chip.getAttribute("data-filter");
+      if (activeFilter === "all") kindFilter = null;
+      render();
+    });
+  });
+
+  function waHref(post) {
+    var lede = post.kind === "share" ? "📣 Shared on The Exchange: " : "🤝 Help wanted on The Exchange: ";
+    var msg = lede + post.text + "\n\n— posted by " + post.name;
+    return "https://wa.me/?text=" + encodeURIComponent(msg);
+  }
+
+  var HELP_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>';
+  var COMMENT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>';
+  var WA_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.63 15.02L2 22l5.13-1.35A10 10 0 1 0 12 2Zm0 18.2a8.16 8.16 0 0 1-4.17-1.14l-.3-.18-3.05.8.81-2.97-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.13c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.95-.14.16-.29.18-.53.06-.24-.12-1.02-.38-1.95-1.2-.72-.64-1.21-1.44-1.35-1.68-.14-.24-.02-.37.11-.49.11-.11.24-.29.36-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.6 4.13 3.64.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg>';
+
+  function esc(s) {
+    return (s || "").replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function linkify(escapedText) {
+    return escapedText.replace(/(https?:\/\/[^\s<]+)/g, function (url) {
+      var clean = url.replace(/[),.;:!?]+$/, "");
+      var trailing = url.slice(clean.length);
+      var display = clean.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      if (display.length > 42) display = display.slice(0, 42) + "…";
+      return '<a href="' + clean + '" target="_blank" rel="noopener" class="post-link">' + display + "</a>" + trailing;
+    });
+  }
+  function inlinePostFormat(escapedText) {
+    var t = escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/__(.+?)__/g, "<u>$1</u>");
+    t = t.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    return linkify(t);
+  }
+  function postBulletIndentLevel(line) {
+    var m = line.match(/^(\s*)[-•]/);
+    var ws = m ? m[1].replace(/\t/g, "  ") : "";
+    return ws.length;
+  }
+  function buildPostBulletHtml(rawLines) {
+    var raw = rawLines.map(function (l) {
+      return { level: postBulletIndentLevel(l), text: l.replace(/^\s*[-•]\s+/, "") };
+    });
+    var minLevel = Math.min.apply(null, raw.map(function (i) { return i.level; }));
+    var items = raw.map(function (i) { return { level: Math.floor((i.level - minLevel) / 2), text: i.text }; });
+    var html = "", stack = [];
+    items.forEach(function (item) {
+      while (stack.length && stack[stack.length - 1] > item.level) { html += "</li></ul>"; stack.pop(); }
+      if (!stack.length || stack[stack.length - 1] < item.level) { html += "<ul>"; stack.push(item.level); }
+      else { html += "</li>"; }
+      html += "<li>" + inlinePostFormat(esc(item.text));
+    });
+    while (stack.length) { html += "</li></ul>"; stack.pop(); }
+    return html;
+  }
+  function renderPostBodyHtml(text) {
+    var raw = (text || "").trim();
+    if (!raw) return "";
+    var blocks = raw.replace(/\r\n/g, "\n").split(/\n\s*\n/).map(function (b) { return b.replace(/^\n+|\n+$/g, ""); }).filter(function (b) { return b.trim().length; });
+    return blocks.map(function (block) {
+      var rawLines = block.split("\n").filter(function (l) { return l.trim().length; });
+      var isBulletBlock = rawLines.length > 0 && rawLines.every(function (l) { return /^\s*[-•]\s+/.test(l); });
+      if (isBulletBlock) return buildPostBulletHtml(rawLines);
+      var lines = rawLines.map(function (l) { return l.trim(); });
+      return "<p>" + lines.map(function (l) { return inlinePostFormat(esc(l)); }).join("<br>") + "</p>";
+    }).join("");
+  }
+
+  function wireComposerToolbar() {
+    function wrapSelection(before, after) {
+      var s = composerText.selectionStart, e = composerText.selectionEnd;
+      var val = composerText.value;
+      var selected = val.slice(s, e) || "text";
+      composerText.value = val.slice(0, s) + before + selected + after + val.slice(e);
+      composerText.focus();
+      composerText.selectionStart = s + before.length;
+      composerText.selectionEnd = s + before.length + selected.length;
+    }
+    function eachSelectedLine(fn) {
+      var s = composerText.selectionStart, e = composerText.selectionEnd;
+      var val = composerText.value;
+      var lineStart = val.lastIndexOf("\n", s - 1) + 1;
+      var lineEnd = val.indexOf("\n", e);
+      if (lineEnd === -1) lineEnd = val.length;
+      var block = val.slice(lineStart, lineEnd);
+      var newBlock = block.split("\n").map(fn).join("\n");
+      composerText.value = val.slice(0, lineStart) + newBlock + val.slice(lineEnd);
+      composerText.focus();
+    }
+    document.getElementById("tb-bold").addEventListener("click", function () { wrapSelection("**", "**"); });
+    document.getElementById("tb-italic").addEventListener("click", function () { wrapSelection("*", "*"); });
+    document.getElementById("tb-underline").addEventListener("click", function () { wrapSelection("__", "__"); });
+    document.getElementById("tb-bullet").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return /^\s*[-•]\s+/.test(l) ? l : "- " + l; });
+    });
+    document.getElementById("tb-indent").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return "  " + l; });
+    });
+  }
+  wireComposerToolbar();
+
+  function render() {
+    if (kindFilter) {
+      kindPill.hidden = false;
+      kindPill.innerHTML = (kindFilter === "share" ? "📣 Showing shared posts only" : "🤝 Showing help-wanted posts only") +
+        ' <button id="kind-pill-clear" aria-label="Clear">✕</button>';
+      document.getElementById("kind-pill-clear").addEventListener("click", clearKindFilter);
+    } else {
+      kindPill.hidden = true;
+    }
+
+    var sorted = state.slice().sort(function (a, b) { return a.ts - b.ts; });
+    var visible = sorted.filter(function (p) {
+      if (kindFilter && p.kind !== kindFilter) return false;
+      if (activeFilter !== "all" && p.tag !== activeFilter) return false;
+      return true;
+    });
+
+    feedEl.innerHTML = visible.map(function (p, i) {
+      var idx = state.indexOf(p);
+      var kindLabel = p.kind === "share" ? "📣 Shared" : "🤝 Help wanted";
+      var tagHtml = p.tag ? '<span class="tag">' + esc(p.tag) + "</span>" : "";
+      var commentsHtml = p.comments.map(function (c) {
+        return '<div class="comment"><div class="av">' + esc(c.initials) + '</div>' +
+          '<div class="comment-body"><span class="cname">' + esc(c.name) + '</span>' + esc(c.text) + '</div></div>';
+      }).join("");
+      return '' +
+        '<article class="post kind-' + p.kind + '">' +
+          '<div class="post-top">' +
+            '<div class="av">' + esc(p.initials) + '</div>' +
+            '<div class="post-meta">' +
+              '<div class="name-row"><span class="name">' + esc(p.name) + '</span>' +
+                '<span class="kind-pill ' + p.kind + '">' + kindLabel + '</span>' +
+                '<span class="when">' + esc(p.when) + '</span></div>' +
+              '<div class="post-body">' + renderPostBodyHtml(p.text) + '</div>' +
+              '<div class="post-tags">' + tagHtml + '</div>' +
+              '<div class="post-actions">' +
+                '<button class="action-btn can-help' + (p.canHelpActive ? ' active' : '') + '" data-action="help" data-idx="' + idx + '">' + HELP_ICON + (p.canHelpActive ? "I can help" : "I can help") + ' · ' + p.canHelp + '</button>' +
+                '<button class="action-btn" data-action="comment" data-idx="' + idx + '">' + COMMENT_ICON + p.comments.length + (p.comments.length === 1 ? " reply" : " replies") + '</button>' +
+                '<button class="action-btn wa" data-action="wa" data-idx="' + idx + '">' + WA_ICON + 'Share to WhatsApp</button>' +
+              '</div>' +
+              '<div class="comments" id="comments-' + idx + '">' +
+                commentsHtml +
+                '<div class="comment-form"><input type="text" placeholder="Reply…" id="reply-input-' + idx + '">' +
+                '<button data-action="reply" data-idx="' + idx + '">Send</button></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+    }).join("") || '<div style="text-align:center;color:var(--ink-faint);font-size:13.5px;padding:30px 0;">Nothing here yet for this filter.</div>';
+
+    feedEl.querySelectorAll('[data-action="help"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = +btn.getAttribute("data-idx");
+        var p = state[idx];
+        p.canHelpActive = !p.canHelpActive;
+        p.canHelp += p.canHelpActive ? 1 : -1;
+        render();
+      });
+    });
+    feedEl.querySelectorAll('[data-action="comment"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = +btn.getAttribute("data-idx");
+        document.getElementById("comments-" + idx).classList.toggle("open");
+      });
+    });
+    feedEl.querySelectorAll('[data-action="wa"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = +btn.getAttribute("data-idx");
+        window.open(waHref(state[idx]), "_blank");
+      });
+    });
+    feedEl.querySelectorAll('[data-action="reply"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = +btn.getAttribute("data-idx");
+        var input = document.getElementById("reply-input-" + idx);
+        var val = input.value.trim();
+        if (!val) return;
+        state[idx].comments.push({ name: "Kush Teotia", initials: "KT", text: val });
+        document.getElementById("comments-" + idx).classList.add("open");
+        render();
+        document.getElementById("comments-" + idx).classList.add("open");
+      });
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>

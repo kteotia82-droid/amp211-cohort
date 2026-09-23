@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cohort Login — AMP 211 Beta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #faf7f2; --surface: #ffffff; --surface-raised: #ffffff;
+    --ink: #211c17; --ink-soft: #6b625685; --ink-soft-solid: #6b6256; --ink-faint: #948a7c;
+    --line: #e6ddd0; --line-strong: #d8cbb8;
+    --accent: #8a2432; --accent-ink: #ffffff; --accent-soft: #f6e4e0; --accent-soft-line: #e9c3bd;
+    --ok-bg: #e5f3ea; --ok-line: #bfdfc9; --ok-ink: #1f7a44;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17130f; --surface: #211b15; --surface-raised: #271f18;
+      --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+      --line: #382f24; --line-strong: #4a3f30;
+      --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+      --ok-bg: #16281d; --ok-line: #2c4a37; --ok-ink: #6fcf9a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17130f; --surface: #211b15; --surface-raised: #271f18;
+    --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+    --line: #382f24; --line-strong: #4a3f30;
+    --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+    --ok-bg: #16281d; --ok-line: #2c4a37; --ok-ink: #6fcf9a;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif;
+    margin: 0; padding: 0 16px; min-height: 100%;
+  }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; margin: 0; }
+
+  .proto-bar {
+    max-width: 420px; margin: 16px auto 0; padding: 10px 16px; background: var(--accent-soft);
+    border: 1px solid var(--accent-soft-line); border-radius: 10px; font-size: 12px; color: var(--ink-soft-solid);
+  }
+  .proto-bar b { color: var(--accent); }
+
+  .stage {
+    max-width: 420px; margin: 0 auto; padding-block: 40px 60px;
+    display: flex; flex-direction: column; align-items: center; min-height: 70vh; justify-content: center;
+  }
+
+  .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+  .mark {
+    width: 42px; height: 42px; border-radius: 11px; background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 14px;
+  }
+  .brand-row h1 { font-size: 19px; font-weight: 600; }
+  .brand-row .sub { font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+
+  .card {
+    width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 30px 28px; text-align: center;
+  }
+  .card[hidden] { display: none; }
+  .glyph { font-size: 30px; margin-bottom: 6px; }
+  .card h2 { font-size: 19px; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; color: var(--ink-soft-solid); line-height: 1.55; margin: 0 auto; max-width: 32ch; }
+  .card p.email-echo { color: var(--ink); font-weight: 600; margin-top: 2px; }
+
+  .field { text-align: left; margin-top: 22px; }
+  .field label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); display: block; margin-bottom: 6px; }
+  .field input[type="email"] {
+    width: 100%; border: 1px solid var(--line-strong); border-radius: 10px; padding: 11px 14px; font-size: 15px;
+    font-family: "IBM Plex Sans", sans-serif; background: var(--bg); color: var(--ink);
+  }
+  .field input[type="email"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .field .hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .field .err { font-size: 12px; color: var(--accent); margin-top: 6px; display: none; }
+  .field.error input { border-color: var(--accent); }
+  .field.error .err { display: block; }
+
+  .code-row { display: flex; gap: 8px; justify-content: center; margin-top: 22px; }
+  .code-row input {
+    width: 42px; height: 52px; text-align: center; font-size: 20px; font-family: "IBM Plex Mono", monospace;
+    border: 1px solid var(--line-strong); border-radius: 10px; background: var(--bg); color: var(--ink);
+  }
+  .code-row input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .btn {
+    width: 100%; margin-top: 20px; font-family: "IBM Plex Sans", sans-serif; font-size: 14.5px; font-weight: 600;
+    border-radius: 10px; border: none; padding: 12px 20px; cursor: pointer; background: var(--accent); color: var(--accent-ink);
+  }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.ghost { background: transparent; color: var(--ink-soft-solid); border: 1px solid var(--line-strong); margin-top: 10px; }
+  .btn.face {
+    background: var(--ink); color: var(--bg); display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .link-btn {
+    background: none; border: none; color: var(--accent); font-size: 12.5px; cursor: pointer; margin-top: 14px;
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+
+  .face-icon { width: 46px; height: 46px; }
+
+  .success-badge {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--ok-bg); border: 1px solid var(--ok-line);
+    color: var(--ok-ink); font-size: 12px; font-weight: 600; border-radius: 20px; padding: 5px 13px; margin-bottom: 14px;
+  }
+
+  .mini-app-preview {
+    margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: var(--bg); text-align: left;
+  }
+  .mini-app-preview .row { display: flex; align-items: center; gap: 10px; }
+  .mini-app-preview .av { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); }
+  .mini-app-preview .bars { flex: 1; }
+  .mini-app-preview .bar { height: 8px; border-radius: 4px; background: var(--line-strong); margin-bottom: 6px; }
+  .mini-app-preview .bar:nth-child(2) { width: 60%; }
+
+  .dev-controls {
+    max-width: 420px; margin: 30px auto 0; padding: 14px 16px; border: 1px dashed var(--line-strong); border-radius: 12px;
+    font-size: 12px; color: var(--ink-faint); text-align: center;
+  }
+  .dev-controls button {
+    font-family: "IBM Plex Mono", monospace; font-size: 11.5px; background: var(--surface); border: 1px solid var(--line-strong);
+    color: var(--ink-soft-solid); border-radius: 7px; padding: 6px 12px; cursor: pointer; margin: 6px 4px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="proto-bar">🧪 <b>Prototype</b> — mockup of the login flow, not wired to real auth yet. Any email/code "works" here.</div>
+
+<div class="stage">
+  <div class="brand-row">
+    <div class="mark">211</div>
+    <div>
+      <h1>AMP&nbsp;211 Cohort</h1>
+      <div class="sub">Fall 2026 · Tata Hall</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: email -->
+  <div class="card" id="screen-email">
+    <div class="glyph">🔒</div>
+    <h2>Sign in to the cohort site</h2>
+    <p>Enter your HBS AMP&nbsp;211 email — we'll text you… er, email you a one-time code. You'll only need to do this once per device.</p>
+    <div class="field" id="email-field">
+      <label for="email-input">HBS email</label>
+      <input type="email" id="email-input" placeholder="you@amp211.hbs.edu" autocomplete="email">
+      <div class="err">That doesn't look like a cohort email — check for typos.</div>
+    </div>
+    <button class="btn" id="btn-send-code">Send me a code</button>
+  </div>
+
+  <!-- SCREEN 2: code -->
+  <div class="card" id="screen-code" hidden>
+    <div class="glyph">✉️</div>
+    <h2>Enter your code</h2>
+    <p>We sent a 6-digit code to</p>
+    <p class="email-echo" id="code-email-echo">you@amp211.hbs.edu</p>
+    <div class="code-row" id="code-row">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+    </div>
+    <button class="btn" id="btn-verify-code" disabled>Verify &amp; continue</button>
+    <button class="link-btn" id="btn-resend">Didn't get it? Resend code</button>
+  </div>
+
+  <!-- SCREEN 3: passkey setup -->
+  <div class="card" id="screen-passkey" hidden>
+    <svg class="face-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)">
+      <path d="M7 3.5A2.5 2.5 0 0 0 4.5 6v2M17 3.5A2.5 2.5 0 0 1 19.5 6v2M4.5 16v2A2.5 2.5 0 0 0 7 20.5M19.5 16v2a2.5 2.5 0 0 1-2.5 2.5"/>
+      <path d="M9 10v1a3 3 0 0 0 3 3M12 8v5"/>
+      <path d="M8 15.5c1 1 2.5 1.5 4 1.5s3-.5 4-1.5"/>
+    </svg>
+    <h2>Use Face ID next time?</h2>
+    <p>Skip typing a code on this device from now on — unlock with Face ID, Touch ID, or your device passcode instead.</p>
+    <button class="btn face" id="btn-enable-passkey">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"/></svg>
+      Enable Face ID
+    </button>
+    <button class="btn ghost" id="btn-skip-passkey">Not now</button>
+  </div>
+
+  <!-- SCREEN 4: success / inside the app -->
+  <div class="card" id="screen-success" hidden>
+    <div class="success-badge">✓ Signed in</div>
+    <h2 id="success-heading">You're in</h2>
+    <p id="success-sub">Welcome to the cohort directory. This device will stay signed in — no need to do this again.</p>
+    <div class="mini-app-preview">
+      <div class="row">
+        <div class="av"></div>
+        <div class="bars">
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: return visit with passkey -->
+  <div class="card" id="screen-return" hidden>
+    <svg class="face-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink)">
+      <path d="M7 3.5A2.5 2.5 0 0 0 4.5 6v2M17 3.5A2.5 2.5 0 0 1 19.5 6v2M4.5 16v2A2.5 2.5 0 0 0 7 20.5M19.5 16v2a2.5 2.5 0 0 1-2.5 2.5"/>
+      <path d="M9 10v1a3 3 0 0 0 3 3M12 8v5"/>
+      <path d="M8 15.5c1 1 2.5 1.5 4 1.5s3-.5 4-1.5"/>
+    </svg>
+    <h2>Welcome back, Kush</h2>
+    <p>Continue with Face ID to open the cohort site.</p>
+    <button class="btn face" id="btn-faceid-unlock">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"/></svg>
+      Continue with Face ID
+    </button>
+    <button class="link-btn" id="btn-use-code-instead">Use email code instead</button>
+  </div>
+</div>
+
+<div class="dev-controls">
+  Prototype controls — jump to a screen<br>
+  <button id="jump-first-visit">First-time visit</button>
+  <button id="jump-return-visit">Return visit (device has passkey)</button>
+</div>
+
+<script>
+  var screens = ["screen-email", "screen-code", "screen-passkey", "screen-success", "screen-return"];
+  function show(id) {
+    screens.forEach(function (s) { document.getElementById(s).hidden = (s !== id); });
+  }
+
+  var emailInput = document.getElementById("email-input");
+  var emailField = document.getElementById("email-field");
+  document.getElementById("btn-send-code").addEventListener("click", function () {
+    var v = emailInput.value.trim();
+    var valid = /^[^\s@]+@amp211\.hbs\.edu$/i.test(v);
+    if (!valid) { emailField.classList.add("error"); return; }
+    emailField.classList.remove("error");
+    document.getElementById("code-email-echo").textContent = v;
+    show("screen-code");
+    document.querySelector("#code-row input").focus();
+  });
+  emailInput.addEventListener("input", function () { emailField.classList.remove("error"); });
+  emailInput.addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("btn-send-code").click(); });
+
+  var codeInputs = Array.prototype.slice.call(document.querySelectorAll("#code-row input"));
+  var verifyBtn = document.getElementById("btn-verify-code");
+  function checkCodeComplete() {
+    var full = codeInputs.every(function (i) { return i.value.length === 1; });
+    verifyBtn.disabled = !full;
+  }
+  codeInputs.forEach(function (input, i) {
+    input.addEventListener("input", function () {
+      input.value = input.value.replace(/[^0-9]/g, "");
+      if (input.value && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+      checkCodeComplete();
+    });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Backspace" && !input.value && i > 0) codeInputs[i - 1].focus();
+    });
+  });
+  verifyBtn.addEventListener("click", function () { show("screen-passkey"); });
+  document.getElementById("btn-resend").addEventListener("click", function () {
+    codeInputs.forEach(function (i) { i.value = ""; });
+    codeInputs[0].focus();
+    checkCodeComplete();
+    document.getElementById("btn-resend").textContent = "Code resent ✓";
+    setTimeout(function () { document.getElementById("btn-resend").textContent = "Didn't get it? Resend code"; }, 1800);
+  });
+
+  document.getElementById("btn-enable-passkey").addEventListener("click", function () {
+    document.getElementById("success-heading").textContent = "Face ID enabled";
+    document.getElementById("success-sub").textContent = "Next time you open this site on this device, just use Face ID — no email, no code.";
+    show("screen-success");
+  });
+  document.getElementById("btn-skip-passkey").addEventListener("click", function () {
+    document.getElementById("success-heading").textContent = "You're in";
+    document.getElementById("success-sub").textContent = "Welcome to the cohort directory. This device will stay signed in — no need to do this again.";
+    show("screen-success");
+  });
+
+  document.getElementById("btn-faceid-unlock").addEventListener("click", function () {
+    document.getElementById("success-heading").textContent = "Welcome back";
+    document.getElementById("success-sub").textContent = "Signed in with Face ID.";
+    show("screen-success");
+  });
+  document.getElementById("btn-use-code-instead").addEventListener("click", function () { show("screen-email"); });
+
+  document.getElementById("jump-first-visit").addEventListener("click", function () {
+    emailInput.value = ""; emailField.classList.remove("error");
+    codeInputs.forEach(function (i) { i.value = ""; }); checkCodeComplete();
+    show("screen-email");
+  });
+  document.getElementById("jump-return-visit").addEventListener("click", function () { show("screen-return"); });
+
+  show("screen-email");
+</script>
+
+</body>
+</html>
