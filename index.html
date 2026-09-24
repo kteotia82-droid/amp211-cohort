@@ -1074,8 +1074,7 @@
       signOutBtn.textContent = "Sign out";
       signOutBtn.addEventListener("click", function () {
         db.auth.signOut().then(function () {
-          el.hidden = true;
-          el.textContent = "";
+          location.href = "login.html";
         });
       });
       el.appendChild(signOutBtn);
