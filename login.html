@@ -220,8 +220,9 @@
         verifyBtn.disabled = false;
         return;
       }
-      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ". This device will stay signed in.";
+      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + " — taking you to the directory…";
       show("screen-success");
+      setTimeout(function () { location.href = "index.html"; }, 900);
     });
   });
   document.getElementById("btn-resend").addEventListener("click", function () {
@@ -244,8 +245,7 @@
     var session = res.data && res.data.session;
     if (session && session.user && session.user.email) {
       pendingEmail = session.user.email;
-      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ". This device will stay signed in.";
-      show("screen-success");
+      location.href = "index.html";
     }
   });
 })();
