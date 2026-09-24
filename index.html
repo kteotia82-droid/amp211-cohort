@@ -1064,7 +1064,19 @@
       return;
     }
     showAuthStatus(session.user.email);
-    boot();
+    // If we didn't already get an identity from an emailed ?pid=&tok=
+    // link, derive it from the real signed-in session instead — this is
+    // what lets a logged-in visitor post to The Exchange, edit their
+    // profile, etc. without needing that link at all.
+    if (state.myPid && state.myTok) {
+      boot();
+    } else {
+      db.rpc("get_my_edit_token").then(function (r) {
+        var row = r.data && r.data[0];
+        if (row) { state.myPid = row.id; state.myTok = row.edit_token; }
+        boot();
+      });
+    }
   });
 
   function boot() {
