@@ -143,6 +143,7 @@
 
   /* ---------- Filter strip ---------- */
   .filters { max-width: 1180px; margin: 0 auto; padding: 0 24px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .filters[hidden] { display: none; }
   .filters .flabel { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin-right: 2px; }
   select.filter, .clear-btn {
     border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
@@ -544,7 +545,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2.5-3 4.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/></svg>
     </a>
   </div>
-  <div class="filters">
+  <div class="filters" id="directory-filters">
     <span class="flabel">Filter</span>
     <select class="filter" id="f-country"><option value="">Country</option></select>
     <select class="filter" id="f-industry"><option value="">Industry</option></select>
@@ -1911,13 +1912,16 @@
 
   var exState = { posts: [], loaded: false, activeTag: "all", kindFilter: null, composerKind: null };
 
+  var directoryFilters = document.getElementById("directory-filters");
   exEls.tabDirectory.addEventListener("click", function () {
     exEls.tabDirectory.classList.add("active"); exEls.tabExchange.classList.remove("active");
     exEls.viewDirectory.hidden = false; exEls.viewExchange.hidden = true;
+    directoryFilters.hidden = false;
   });
   exEls.tabExchange.addEventListener("click", function () {
     exEls.tabExchange.classList.add("active"); exEls.tabDirectory.classList.remove("active");
     exEls.viewExchange.hidden = false; exEls.viewDirectory.hidden = true;
+    directoryFilters.hidden = true;
     if (!exState.loaded) loadExchange();
   });
 
