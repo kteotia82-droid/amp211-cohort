@@ -213,7 +213,7 @@
     var code = codeInputs.map(function (i) { return i.value; }).join("");
     verifyBtn.disabled = true; verifyBtn.textContent = "Verifying…";
     codeErr.classList.remove("show");
-    db.auth.verifyOtp({ email: pendingEmail, token: code, type: "email" }).then(function (res) {
+    db.auth.verifyOtp({ email: pendingEmail, token: code, type: "magiclink" }).then(function (res) {
       verifyBtn.textContent = "Verify & continue";
       if (res.error) {
         codeErr.classList.add("show");
