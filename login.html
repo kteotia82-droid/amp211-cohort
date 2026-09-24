@@ -303,8 +303,7 @@
     var session = res.data && res.data.session;
     if (session && session.user && session.user.email) {
       pendingEmail = session.user.email;
-      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ".";
-      show("screen-success");
+      location.href = "index.html";
     }
   });
 })();

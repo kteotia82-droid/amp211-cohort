@@ -371,6 +371,11 @@
     padding: 0; text-decoration: underline; text-underline-offset: 2px;
   }
   .link-btn:hover { color: var(--ink); }
+  .auth-status { font-size: 12px; color: var(--ink-soft-solid); white-space: nowrap; }
+  .auth-status button {
+    background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer;
+    padding: 0; margin-left: 6px; text-decoration: underline; text-underline-offset: 2px;
+  }
   .find-link-panel { width: min(420px, 100%); height: auto; max-height: 90vh; border-radius: 16px; margin: auto; align-self: center; }
   .find-link-copy { font-size: 13.5px; color: var(--ink-soft-solid); line-height: 1.6; margin: 4px 0 18px; }
   #find-link-scrim { align-items: center; }
@@ -562,6 +567,8 @@
       <input id="search" type="search" placeholder="Search name, company, industry, city…" autocomplete="off" />
     </div>
     <span class="count-pill" id="count-pill">173 classmates</span>
+    <button class="link-btn edit-link-trigger" id="find-link-trigger">Request your edit link</button>
+    <span class="auth-status" id="auth-status" hidden></span>
     <a class="icon-link help-link" href="mailto:hbsamp211@gmail.com?subject=AMP%20211%20Cohort%20site%20help" title="Need help? Email us" aria-label="Need help? Email us">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2.5-3 4.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/></svg>
     </a>
@@ -868,7 +875,6 @@
 <footer>
   AMP 211 · Fall 2026 · a classmate-built directory, not an official HBS site
   <span id="visit-count"></span>
-  <br><button class="link-btn" id="find-link-trigger">Need your edit link?</button>
 </footer>
 
 <div class="scrim" id="scrim" hidden>
@@ -1051,6 +1057,29 @@
   function boot() {
     loadPeople(function () { maybeOpenOwnProfile(); });
     trackVisit();
+    checkAuthStatus();
+  }
+
+  // Shows who's signed in (from the private login.html test page) with a
+  // Sign out control, if anyone is. Most visitors have no session yet —
+  // the site itself isn't gated on this.
+  function checkAuthStatus() {
+    var el = document.getElementById("auth-status");
+    db.auth.getSession().then(function (res) {
+      var session = res.data && res.data.session;
+      if (!session || !session.user || !session.user.email) return;
+      el.hidden = false;
+      el.textContent = "Signed in as " + session.user.email;
+      var signOutBtn = document.createElement("button");
+      signOutBtn.textContent = "Sign out";
+      signOutBtn.addEventListener("click", function () {
+        db.auth.signOut().then(function () {
+          el.hidden = true;
+          el.textContent = "";
+        });
+      });
+      el.appendChild(signOutBtn);
+    });
   }
 
   // Counts at most one visit per device per day (via localStorage), so
