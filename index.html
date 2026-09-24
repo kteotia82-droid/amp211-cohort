@@ -510,6 +510,8 @@
   .post-link { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft-line); word-break: break-all; }
   .post-link:hover { border-bottom-color: var(--accent); }
   .post-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .reactor-list { margin-top: 8px; font-size: 12px; color: var(--ink-soft-solid); }
+  .reactor-list[hidden] { display: none; }
   .post .tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-soft-solid); }
   .post-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
   .action-btn {
@@ -2150,12 +2152,14 @@
       var comments = commentsRes.data || [];
       var reactions = reactionsRes.data || [];
       exState.posts = (postsRes.data || []).map(function (p) {
+        var postReactions = reactions.filter(function (r) { return r.post_id === p.id; });
         return {
           id: p.id, pid: p.pid, kind: p.kind, text: p.text, tag: p.tag, createdAt: p.created_at,
           authorName: p.author_name, authorPhoto: p.author_photo,
           comments: comments.filter(function (c) { return c.post_id === p.id; }),
-          reactionCount: reactions.filter(function (r) { return r.post_id === p.id; }).length,
-          iReacted: !!(state.myPid && reactions.some(function (r) { return r.post_id === p.id && r.pid === state.myPid; }))
+          reactionCount: postReactions.length,
+          reactorNames: postReactions.map(function (r) { return r.reactor_name; }),
+          iReacted: !!(state.myPid && postReactions.some(function (r) { return r.pid === state.myPid; }))
         };
       });
       exState.loaded = true;
@@ -2222,10 +2226,12 @@
               '<div class="post-tags">' + tagHtml + '</div>' +
               '<div class="post-actions">' +
                 '<button class="action-btn can-help' + (p.iReacted ? ' active' : '') + '" data-action="help" data-id="' + p.id + '">I can help · ' + p.reactionCount + '</button>' +
+                (p.reactionCount > 0 ? '<button class="action-btn" data-action="who" data-id="' + p.id + '">who?</button>' : '') +
                 '<button class="action-btn" data-action="comment" data-id="' + p.id + '">' + p.comments.length + (p.comments.length === 1 ? " reply" : " replies") + '</button>' +
                 '<button class="action-btn wa" data-action="wa" data-id="' + p.id + '">Share to WhatsApp</button>' +
                 (isMine ? '<button class="action-btn del" data-action="del" data-id="' + p.id + '">Delete</button>' : '') +
               '</div>' +
+              (p.reactionCount > 0 ? '<div class="reactor-list" id="ex-reactors-' + p.id + '" hidden>' + esc(p.reactorNames.join(", ")) + ' can help</div>' : '') +
               '<div class="comments" id="ex-comments-' + p.id + '">' + commentsHtml +
                 '<div class="comment-form"><input type="text" placeholder="Reply…" id="ex-reply-' + p.id + '">' +
                 '<button data-action="reply" data-id="' + p.id + '">Send</button></div>' +
@@ -2240,6 +2246,12 @@
         if (!requireOwnLink("react to a post")) return;
         var id = +btn.getAttribute("data-id");
         db.rpc("toggle_exchange_reaction", { p_id: state.myPid, p_token: state.myTok, p_post_id: id }).then(function () { loadExchange(); });
+      });
+    });
+    exEls.feed.querySelectorAll('[data-action="who"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var el = document.getElementById("ex-reactors-" + btn.getAttribute("data-id"));
+        if (el) el.hidden = !el.hidden;
       });
     });
     exEls.feed.querySelectorAll('[data-action="comment"]').forEach(function (btn) {
