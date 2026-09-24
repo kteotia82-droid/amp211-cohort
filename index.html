@@ -1147,7 +1147,11 @@
 
   var openedOwnProfile = false;
   function maybeOpenOwnProfile() {
-    if (openedOwnProfile || !state.myPid) return;
+    // Only auto-open when we got here via an actual emailed edit link
+    // (?pid=&tok=) — not just because a signed-in session resolved an
+    // identity in the background. Otherwise every normal login would
+    // pop your own profile open instead of just showing the directory.
+    if (openedOwnProfile || !state.myPid || !(qp.get("pid") && qp.get("tok"))) return;
     var p = state.people.find(function (x) { return x.id === state.myPid; });
     if (p) {
       openedOwnProfile = true;
