@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Sign in — AMP 211 Cohort</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #faf7f2; --surface: #ffffff; --ink: #211c17; --ink-soft: #6b625685; --ink-soft-solid: #6b6256; --ink-faint: #948a7c;
+    --line: #e6ddd0; --line-strong: #d8cbb8; --accent: #8a2432; --accent-ink: #ffffff; --accent-soft: #f6e4e0; --accent-soft-line: #e9c3bd;
+    --ok-bg: #e5f3ea; --ok-line: #bfdfc9; --ok-ink: #1f7a44;
+    --warn-bg: #fbeaea; --warn-ink: #a33a3a;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17130f; --surface: #211b15; --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+      --line: #382f24; --line-strong: #4a3f30; --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+      --ok-bg: #16281d; --ok-line: #2c4a37; --ok-ink: #6fcf9a;
+      --warn-bg: #2b1717; --warn-ink: #e0837e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17130f; --surface: #211b15; --ink: #f1e9dd; --ink-soft: #c3b6a385; --ink-soft-solid: #c3b6a3; --ink-faint: #8d8171;
+    --line: #382f24; --line-strong: #4a3f30; --accent: #e2836e; --accent-ink: #211205; --accent-soft: #35211d; --accent-soft-line: #5a332c;
+    --ok-bg: #16281d; --ok-line: #2c4a37; --ok-ink: #6fcf9a;
+    --warn-bg: #2b1717; --warn-ink: #e0837e;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif;
+    margin: 0; padding: 0 16px; min-height: 100vh;
+  }
+  h1, h2 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; margin: 0; }
+
+  .priv-bar {
+    max-width: 420px; margin: 16px auto 0; padding: 8px 14px; background: var(--accent-soft);
+    border: 1px solid var(--accent-soft-line); border-radius: 10px; font-size: 11.5px; color: var(--ink-soft-solid);
+  }
+
+  .stage {
+    max-width: 420px; margin: 0 auto; padding-block: 40px 60px;
+    display: flex; flex-direction: column; align-items: center; min-height: 65vh; justify-content: center;
+  }
+  .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+  .mark {
+    width: 42px; height: 42px; border-radius: 11px; background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 14px;
+  }
+  .brand-row h1 { font-size: 19px; font-weight: 600; }
+  .brand-row .sub { font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+
+  .card {
+    width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 30px 28px; text-align: center;
+  }
+  .card[hidden] { display: none; }
+  .glyph { font-size: 30px; margin-bottom: 6px; }
+  .card h2 { font-size: 19px; margin-bottom: 8px; }
+  .card p { font-size: 13.5px; color: var(--ink-soft-solid); line-height: 1.55; margin: 0 auto; max-width: 32ch; }
+  .card p.email-echo { color: var(--ink); font-weight: 600; margin-top: 2px; }
+
+  .field { text-align: left; margin-top: 22px; }
+  .field label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); display: block; margin-bottom: 6px; }
+  .field input[type="email"] {
+    width: 100%; border: 1px solid var(--line-strong); border-radius: 10px; padding: 11px 14px; font-size: 15px;
+    font-family: "IBM Plex Sans", sans-serif; background: var(--bg); color: var(--ink);
+  }
+  .field input[type="email"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .field .err { font-size: 12px; color: var(--warn-ink); margin-top: 6px; display: none; }
+  .field.error input { border-color: var(--warn-ink); }
+  .field.error .err { display: block; }
+
+  .code-row { display: flex; gap: 8px; justify-content: center; margin-top: 22px; }
+  .code-row input {
+    width: 42px; height: 52px; text-align: center; font-size: 20px; font-family: "IBM Plex Mono", monospace;
+    border: 1px solid var(--line-strong); border-radius: 10px; background: var(--bg); color: var(--ink);
+  }
+  .code-row input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .code-err { font-size: 12.5px; color: var(--warn-ink); margin-top: 12px; display: none; }
+  .code-err.show { display: block; }
+
+  .btn {
+    width: 100%; margin-top: 20px; font-family: "IBM Plex Sans", sans-serif; font-size: 14.5px; font-weight: 600;
+    border-radius: 10px; border: none; padding: 12px 20px; cursor: pointer; background: var(--accent); color: var(--accent-ink);
+  }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btn.ghost { background: transparent; color: var(--ink-soft-solid); border: 1px solid var(--line-strong); margin-top: 10px; }
+  .link-btn {
+    background: none; border: none; color: var(--accent); font-size: 12.5px; cursor: pointer; margin-top: 14px;
+    font-family: "IBM Plex Sans", sans-serif;
+  }
+
+  .success-badge {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--ok-bg); border: 1px solid var(--ok-line);
+    color: var(--ok-ink); font-size: 12px; font-weight: 600; border-radius: 20px; padding: 5px 13px; margin-bottom: 14px;
+  }
+  .back-link { margin-top: 18px; display: inline-block; font-size: 13px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="priv-bar">🔒 Private test page — not linked from the main site yet. Only pre-approved accounts can sign in.</div>
+
+<div class="stage">
+  <div class="brand-row">
+    <div class="mark">211</div>
+    <div>
+      <h1>AMP&nbsp;211 Cohort</h1>
+      <div class="sub">Fall 2026 · Tata Hall</div>
+    </div>
+  </div>
+
+  <div class="card" id="screen-email">
+    <div class="glyph">🔒</div>
+    <h2>Sign in</h2>
+    <p>Enter your HBS AMP 211 email — we'll send you a one-time code.</p>
+    <div class="field" id="email-field">
+      <label for="email-input">Email</label>
+      <input type="email" id="email-input" placeholder="you@amp211.hbs.edu" autocomplete="email">
+      <div class="err">Enter a valid email address.</div>
+    </div>
+    <button class="btn" id="btn-send-code">Send me a code</button>
+  </div>
+
+  <div class="card" id="screen-code" hidden>
+    <div class="glyph">✉️</div>
+    <h2>Enter your code</h2>
+    <p>If that email is approved, a 6-digit code is on its way to</p>
+    <p class="email-echo" id="code-email-echo"></p>
+    <div class="code-row" id="code-row">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric">
+    </div>
+    <div class="code-err" id="code-err">That code didn't work — check for typos, or it may have expired.</div>
+    <button class="btn" id="btn-verify-code" disabled>Verify &amp; continue</button>
+    <button class="link-btn" id="btn-resend">Use a different email</button>
+  </div>
+
+  <div class="card" id="screen-success" hidden>
+    <div class="success-badge">✓ Signed in</div>
+    <h2>You're in</h2>
+    <p id="success-sub"></p>
+    <button class="btn ghost" id="btn-signout">Sign out</button>
+  </div>
+
+  <a class="back-link" href="index.html">&larr; Back to the directory</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+<script>
+(function () {
+  var SUPABASE_URL = "https://rqwppsgwiflibaoxeovk.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_YVWtfDr9qLMwWJKcdZ5OQA_ri2aUVIL";
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var screens = ["screen-email", "screen-code", "screen-success"];
+  function show(id) {
+    screens.forEach(function (s) { document.getElementById(s).hidden = (s !== id); });
+  }
+
+  var emailInput = document.getElementById("email-input");
+  var emailField = document.getElementById("email-field");
+  var pendingEmail = "";
+
+  document.getElementById("btn-send-code").addEventListener("click", function () {
+    var v = emailInput.value.trim();
+    var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    if (!valid) { emailField.classList.add("error"); return; }
+    emailField.classList.remove("error");
+    pendingEmail = v;
+
+    var btn = document.getElementById("btn-send-code");
+    btn.disabled = true; btn.textContent = "Sending…";
+    db.auth.signInWithOtp({ email: v, options: { shouldCreateUser: false } }).then(function () {
+      btn.disabled = false; btn.textContent = "Send me a code";
+      document.getElementById("code-email-echo").textContent = v;
+      show("screen-code");
+      document.querySelector("#code-row input").focus();
+    });
+  });
+  emailInput.addEventListener("input", function () { emailField.classList.remove("error"); });
+  emailInput.addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("btn-send-code").click(); });
+
+  var codeInputs = Array.prototype.slice.call(document.querySelectorAll("#code-row input"));
+  var verifyBtn = document.getElementById("btn-verify-code");
+  var codeErr = document.getElementById("code-err");
+  function checkCodeComplete() {
+    var full = codeInputs.every(function (i) { return i.value.length === 1; });
+    verifyBtn.disabled = !full;
+  }
+  codeInputs.forEach(function (input, i) {
+    input.addEventListener("input", function () {
+      input.value = input.value.replace(/[^0-9]/g, "");
+      if (input.value && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+      checkCodeComplete();
+    });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Backspace" && !input.value && i > 0) codeInputs[i - 1].focus();
+    });
+  });
+
+  verifyBtn.addEventListener("click", function () {
+    var code = codeInputs.map(function (i) { return i.value; }).join("");
+    verifyBtn.disabled = true; verifyBtn.textContent = "Verifying…";
+    codeErr.classList.remove("show");
+    db.auth.verifyOtp({ email: pendingEmail, token: code, type: "email" }).then(function (res) {
+      verifyBtn.textContent = "Verify & continue";
+      if (res.error) {
+        codeErr.classList.add("show");
+        verifyBtn.disabled = false;
+        return;
+      }
+      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ". This device will stay signed in.";
+      show("screen-success");
+    });
+  });
+  document.getElementById("btn-resend").addEventListener("click", function () {
+    codeInputs.forEach(function (i) { i.value = ""; });
+    checkCodeComplete();
+    show("screen-email");
+  });
+
+  document.getElementById("btn-signout").addEventListener("click", function () {
+    db.auth.signOut().then(function () {
+      codeInputs.forEach(function (i) { i.value = ""; });
+      emailInput.value = "";
+      checkCodeComplete();
+      show("screen-email");
+    });
+  });
+
+  // If already signed in (real session from a previous visit), skip straight to success.
+  db.auth.getSession().then(function (res) {
+    var session = res.data && res.data.session;
+    if (session && session.user && session.user.email) {
+      pendingEmail = session.user.email;
+      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ". This device will stay signed in.";
+      show("screen-success");
+    }
+  });
+})();
+</script>
+</body>
+</html>
