@@ -557,7 +557,7 @@
         <div class="sub">Fall 2026 · Tata Hall</div>
       </div>
     </div>
-    <div class="searchwrap">
+    <div class="searchwrap" id="directory-searchwrap">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="search" type="search" placeholder="Search name, company, industry, city…" autocomplete="off" />
     </div>
@@ -1945,6 +1945,8 @@
   var exState = { posts: [], loaded: false, activeTag: "all", kindFilter: null, composerKind: null };
 
   var directoryFilters = document.getElementById("directory-filters");
+  var directorySearchwrap = document.getElementById("directory-searchwrap");
+  var countPillEl = document.getElementById("count-pill");
   var bnavDirectory = document.getElementById("bnav-directory");
   var bnavExchange = document.getElementById("bnav-exchange");
   function showDirectoryTab() {
@@ -1952,12 +1954,16 @@
     bnavDirectory.classList.add("active"); bnavExchange.classList.remove("active");
     exEls.viewDirectory.hidden = false; exEls.viewExchange.hidden = true;
     directoryFilters.hidden = false;
+    directorySearchwrap.hidden = false;
+    countPillEl.hidden = false;
   }
   function showExchangeTab() {
     exEls.tabExchange.classList.add("active"); exEls.tabDirectory.classList.remove("active");
     bnavExchange.classList.add("active"); bnavDirectory.classList.remove("active");
     exEls.viewExchange.hidden = false; exEls.viewDirectory.hidden = true;
     directoryFilters.hidden = true;
+    directorySearchwrap.hidden = true;
+    countPillEl.hidden = true;
     if (!exState.loaded) loadExchange();
   }
   exEls.tabDirectory.addEventListener("click", showDirectoryTab);
