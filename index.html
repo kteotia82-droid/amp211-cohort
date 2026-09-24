@@ -236,9 +236,15 @@
   .cpop-person .prole { font-size: 11px; color: var(--ink-faint); }
 
   /* ---------- Directory ---------- */
+  section.directory { margin-bottom: 36px; }
   section.directory h2 { font-size: 19px; font-weight: 600; margin-bottom: 4px; }
   .dir-sub { color: var(--ink-soft-solid); font-size: 13px; margin: 0 0 16px; }
 
+  .dir-scroll {
+    max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+    background: var(--surface-raised);
+  }
   .grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); gap: 14px;
   }
@@ -401,6 +407,17 @@
 </header>
 
 <main>
+  <section class="directory" id="directory">
+    <h2>Directory</h2>
+    <p class="dir-sub" id="dir-sub">Every profile below is editable by its owner via their personal link.</p>
+    <div class="dir-scroll">
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>
+        <h3>No one matches yet</h3>
+        <div>Try a different search term or clear your filters.</div>
+      </div>
+    </div>
+  </section>
   <section class="world">
     <div class="world-head">
       <div>
@@ -608,15 +625,6 @@
     </div>
   </section>
 
-  <section class="directory" id="directory">
-    <h2>Directory</h2>
-    <p class="dir-sub" id="dir-sub">Every profile below is editable by its owner via their personal link.</p>
-    <div class="grid" id="grid"></div>
-    <div class="empty" id="empty" hidden>
-      <h3>No one matches yet</h3>
-      <div>Try a different search term or clear your filters.</div>
-    </div>
-  </section>
 </main>
 
 <footer>
