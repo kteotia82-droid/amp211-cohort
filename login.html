@@ -126,6 +126,23 @@
       <div class="err">Enter a valid email address.</div>
     </div>
     <button class="btn" id="btn-send-code">Send me a code</button>
+    <button class="btn ghost" id="btn-passkey-signin" hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01"/></svg>
+      Continue with Face ID
+    </button>
+    <div class="passkey-err" id="passkey-err" style="display:none;font-size:12px;color:var(--warn-ink);margin-top:10px;">Face ID sign-in didn't work — try entering your email instead.</div>
+  </div>
+
+  <div class="card" id="screen-passkey-offer" hidden>
+    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px">
+      <path d="M7 3.5A2.5 2.5 0 0 0 4.5 6v2M17 3.5A2.5 2.5 0 0 1 19.5 6v2M4.5 16v2A2.5 2.5 0 0 0 7 20.5M19.5 16v2a2.5 2.5 0 0 1-2.5 2.5"/>
+      <path d="M9 10v1a3 3 0 0 0 3 3M12 8v5"/>
+      <path d="M8 15.5c1 1 2.5 1.5 4 1.5s3-.5 4-1.5"/>
+    </svg>
+    <h2>Use Face ID next time?</h2>
+    <p>Skip typing a code on this device from now on.</p>
+    <button class="btn" id="btn-enable-passkey">Enable Face ID</button>
+    <button class="btn ghost" id="btn-skip-passkey">Not now</button>
   </div>
 
   <div class="card" id="screen-code" hidden>
@@ -161,12 +178,39 @@
 (function () {
   var SUPABASE_URL = "https://rqwppsgwiflibaoxeovk.supabase.co";
   var SUPABASE_ANON_KEY = "sb_publishable_YVWtfDr9qLMwWJKcdZ5OQA_ri2aUVIL";
-  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { experimental: { passkey: true } }
+  });
 
-  var screens = ["screen-email", "screen-code", "screen-success"];
+  var screens = ["screen-email", "screen-code", "screen-passkey-offer", "screen-success"];
   function show(id) {
     screens.forEach(function (s) { document.getElementById(s).hidden = (s !== id); });
   }
+
+  function finishSignIn(email) {
+    document.getElementById("success-sub").textContent = "Signed in as " + email + " — taking you to the directory…";
+    show("screen-success");
+    setTimeout(function () { location.href = "index.html"; }, 900);
+  }
+
+  // Offer Face ID sign-in up front when the browser supports WebAuthn —
+  // signInWithPasskey() runs the full discoverable-credential ceremony
+  // itself, so we don't need to know in advance whether this device
+  // actually has one enrolled.
+  if (window.PublicKeyCredential) {
+    document.getElementById("btn-passkey-signin").hidden = false;
+  }
+  document.getElementById("btn-passkey-signin").addEventListener("click", function () {
+    var errEl = document.getElementById("passkey-err");
+    errEl.style.display = "none";
+    db.auth.signInWithPasskey().then(function (res) {
+      if (res.error || !res.data || !res.data.user) {
+        errEl.style.display = "block";
+        return;
+      }
+      finishSignIn(res.data.user.email);
+    });
+  });
 
   var emailInput = document.getElementById("email-input");
   var emailField = document.getElementById("email-field");
@@ -220,10 +264,22 @@
         verifyBtn.disabled = false;
         return;
       }
-      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + " — taking you to the directory…";
-      show("screen-success");
-      setTimeout(function () { location.href = "index.html"; }, 900);
+      if (window.PublicKeyCredential) {
+        show("screen-passkey-offer");
+      } else {
+        finishSignIn(pendingEmail);
+      }
     });
+  });
+  document.getElementById("btn-enable-passkey").addEventListener("click", function () {
+    var btn = document.getElementById("btn-enable-passkey");
+    btn.disabled = true; btn.textContent = "Setting up…";
+    db.auth.registerPasskey().then(function () {
+      finishSignIn(pendingEmail);
+    });
+  });
+  document.getElementById("btn-skip-passkey").addEventListener("click", function () {
+    finishSignIn(pendingEmail);
   });
   document.getElementById("btn-resend").addEventListener("click", function () {
     codeInputs.forEach(function (i) { i.value = ""; });
