@@ -296,12 +296,15 @@
     });
   });
 
-  // If already signed in (real session from a previous visit), skip straight to success.
+  // If already signed in (real session from a previous visit), show status
+  // here (with a Sign out option) rather than bouncing straight through —
+  // this page is the only place that control lives right now.
   db.auth.getSession().then(function (res) {
     var session = res.data && res.data.session;
     if (session && session.user && session.user.email) {
       pendingEmail = session.user.email;
-      location.href = "index.html";
+      document.getElementById("success-sub").textContent = "Signed in as " + pendingEmail + ".";
+      show("screen-success");
     }
   });
 })();
