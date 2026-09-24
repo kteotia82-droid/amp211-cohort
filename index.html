@@ -34,6 +34,9 @@
     --chip-bg: #f1ebe0;
     --focus: #b5602f;
     --shadow: 0 1px 2px rgba(50, 38, 20, 0.06), 0 8px 24px -12px rgba(50, 38, 20, 0.18);
+    --help-bg: #fdf1e0; --help-line: #ecd3a3; --help-ink: #97591a;
+    --share-bg: #e5eef8; --share-line: #bcd2ea; --share-ink: #1c5c96;
+    --warm-bg: #fbeaea; --warm-line: #f0c9c9; --warm-ink: #a33a3a;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -54,6 +57,9 @@
       --chip-bg: #2a2319;
       --focus: #e2a373;
       --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -12px rgba(0,0,0,0.55);
+      --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+      --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+      --warm-bg: #2b1717; --warm-line: #4a2626; --warm-ink: #e0837e;
       color-scheme: dark;
     }
   }
@@ -74,6 +80,9 @@
     --chip-bg: #2a2319;
     --focus: #e2a373;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 28px -12px rgba(0,0,0,0.55);
+    --help-bg: #2c2013; --help-line: #4a3620; --help-ink: #e3a75c;
+    --share-bg: #16232f; --share-line: #2c435c; --share-ink: #7cb0e8;
+    --warm-bg: #2b1717; --warm-line: #4a2626; --warm-ink: #e0837e;
     color-scheme: dark;
   }
 
@@ -372,6 +381,145 @@
     .country-popover { width: min(240px, calc(100vw - 60px)); }
     .panel { width: 100%; }
   }
+
+  /* ---------- Tabs ---------- */
+  .toptabs {
+    max-width: 1120px; margin: 0 auto; padding: 0 24px; display: flex; gap: 4px;
+    border-bottom: 1px solid var(--line); margin-top: 4px;
+  }
+  .toptab {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 14px; font-weight: 500; color: var(--ink-faint);
+    background: none; border: none; padding: 10px 4px; margin-right: 22px; cursor: pointer;
+    border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 7px;
+  }
+  .toptab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  /* ---------- The Exchange ---------- */
+  #view-exchange { max-width: 1120px; margin: 0 auto; padding: 24px; }
+  .exchange-intro h2 { font-size: 25px; }
+  .exchange-intro p { font-size: 14px; color: var(--ink-soft-solid); margin-top: 6px; max-width: 60ch; }
+
+  .starters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  @media (max-width: 620px) { .starters { grid-template-columns: 1fr; } }
+  .starter-btn {
+    text-align: left; border: 1px solid var(--line-strong); border-left: 4px solid var(--line-strong);
+    background: var(--surface); border-radius: 14px;
+    padding: 16px 18px 16px 16px; cursor: pointer; font-family: "IBM Plex Sans", sans-serif;
+    transition: border-color .15s, transform .1s;
+  }
+  .starter-btn:active { transform: scale(.99); }
+  .starter-btn .icon { font-size: 20px; }
+  .starter-btn .lede { font-family: "Fraunces", serif; font-size: 17px; font-weight: 500; margin-top: 8px; color: var(--ink); }
+  .starter-btn .hint { font-size: 12.5px; color: var(--ink-faint); margin-top: 4px; }
+  .starter-btn.share { border-left-color: var(--share-ink); background: linear-gradient(to right, var(--share-bg), var(--surface) 56px); }
+  .starter-btn.share:hover { border-color: var(--share-ink); }
+  .starter-btn.help { border-left-color: var(--help-ink); background: linear-gradient(to right, var(--help-bg), var(--surface) 56px); }
+  .starter-btn.help:hover { border-color: var(--help-ink); }
+
+  .composer { margin-top: 14px; border: 1px solid var(--accent-soft-line); background: var(--accent-soft); border-radius: 14px; padding: 16px 18px; }
+  .composer[hidden] { display: none; }
+  .composer .lede-line { font-family: "Fraunces", serif; font-size: 16px; margin-bottom: 8px; }
+  .post-toolbar { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+  .tb-btn {
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+    border-radius: 7px; padding: 4px 10px; font-size: 12.5px; cursor: pointer; font-family: "IBM Plex Sans", sans-serif;
+  }
+  .tb-btn:hover { background: var(--accent-soft); }
+  .composer-hint { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
+  .composer textarea {
+    width: 100%; min-height: 70px; border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 12px;
+    font-family: "IBM Plex Sans", sans-serif; font-size: 14px; background: var(--surface); color: var(--ink); resize: vertical;
+  }
+  .composer-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .tag-select {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; padding: 6px 10px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  }
+
+  .filter-row { display: flex; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+  .filter-row .flabel { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin-right: 4px; }
+  .chip {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 20px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-soft-solid); cursor: pointer;
+  }
+  .chip.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .kind-filter-pill {
+    margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px;
+    background: var(--accent-soft); border: 1px solid var(--accent-soft-line); color: var(--ink);
+    border-radius: 20px; padding: 5px 8px 5px 14px;
+  }
+  .kind-filter-pill button {
+    border: none; background: var(--ink); color: var(--bg); border-radius: 50%; width: 18px; height: 18px;
+    font-size: 12px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  .feed { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .post { border: 1px solid var(--line); border-left: 4px solid var(--line-strong); border-radius: 14px; padding: 18px 20px 18px 18px; background: var(--surface); }
+  .post.kind-share { border-left-color: var(--share-ink); background: linear-gradient(to right, var(--share-bg), var(--surface) 56px); }
+  .post.kind-help { border-left-color: var(--help-ink); background: linear-gradient(to right, var(--help-bg), var(--surface) 56px); }
+  .post-top { display: flex; gap: 12px; }
+  .post .av {
+    width: 38px; height: 38px; border-radius: 50%; flex: none; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-family: "Fraunces", serif; font-weight: 600; font-size: 13px;
+    object-fit: cover;
+  }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-meta .name-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .post-meta .name { font-weight: 600; font-size: 14px; }
+  .post-meta .when { font-size: 12px; color: var(--ink-faint); }
+  .kind-pill { font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+  .kind-pill.share { background: var(--share-bg); color: var(--share-ink); }
+  .kind-pill.help { background: var(--help-bg); color: var(--help-ink); }
+  .post-body { font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+  .post-body p { margin: 0 0 10px; }
+  .post-body p:last-child { margin-bottom: 0; }
+  .post-body ul { margin: 0 0 10px; padding-left: 20px; }
+  .post-body ul ul { margin: 4px 0 0; padding-left: 18px; }
+  .post-body li { margin-bottom: 3px; }
+  .post-body strong { font-weight: 700; }
+  .post-body em { font-style: italic; }
+  .post-body u { text-decoration: underline; }
+  .post-link { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft-line); word-break: break-all; }
+  .post-link:hover { border-bottom-color: var(--accent); }
+  .post-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .post .tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--bg); border: 1px solid var(--line); color: var(--ink-soft-solid); }
+  .post-actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .action-btn {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 12.5px; color: var(--ink-soft-solid); background: none;
+    border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 4px 2px;
+  }
+  .action-btn:hover { color: var(--ink); }
+  .action-btn.can-help.active { color: var(--help-ink); font-weight: 600; }
+  .action-btn.wa:hover { color: var(--share-ink); }
+  .action-btn.del:hover { color: var(--warm-ink); }
+
+  .comments { margin-top: 12px; display: none; flex-direction: column; gap: 10px; }
+  .comments.open { display: flex; }
+  .comment { display: flex; gap: 10px; }
+  .comment .av { width: 28px; height: 28px; font-size: 11px; }
+  .comment-body { background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; flex: 1; }
+  .comment-body .cname { font-weight: 600; font-size: 12.5px; margin-right: 6px; }
+  .comment-form { display: flex; gap: 8px; margin-top: 4px; }
+  .comment-form input {
+    flex: 1; border: 1px solid var(--line-strong); border-radius: 20px; padding: 7px 14px; font-size: 13px;
+    font-family: "IBM Plex Sans", sans-serif; background: var(--surface); color: var(--ink);
+  }
+  .comment-form button { border: none; background: var(--ink); color: var(--bg); border-radius: 20px; padding: 0 16px; font-size: 12.5px; cursor: pointer; font-weight: 600; }
+
+  .opt-out-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; margin-top: 10px; }
+  .opt-out-row input { width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+  .opt-out-row label { font-size: 13.5px; cursor: pointer; flex: 1; }
+  .opt-out-row .sub { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+
+  .unsub-card {
+    max-width: 460px; margin: 60px auto; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+    padding: 30px 28px; text-align: center;
+  }
+  .unsub-card .glyph { font-size: 26px; margin-bottom: 10px; }
+  .unsub-card h2 { font-size: 19px; margin-bottom: 8px; }
+  .unsub-card p { font-size: 13.5px; color: var(--ink-soft-solid); line-height: 1.6; max-width: 40ch; margin: 0 auto; }
+  .unsub-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -406,7 +554,12 @@
   </div>
 </header>
 
-<main>
+<div class="toptabs">
+  <button class="toptab active" id="tab-directory">🗺️ Directory</button>
+  <button class="toptab" id="tab-exchange">💬 The Exchange</button>
+</div>
+
+<main id="view-directory">
   <section class="directory" id="directory">
     <h2>Directory</h2>
     <p class="dir-sub" id="dir-sub">Every profile below is editable by its owner via their personal link.</p>
@@ -627,6 +780,58 @@
 
 </main>
 
+<main id="view-exchange" hidden>
+  <section class="exchange-intro">
+    <h2>The Exchange</h2>
+    <p>A place to share something with the cohort, or ask for help — an intro, advice, a favor. Post as yourself, reply to anyone.</p>
+  </section>
+
+  <div class="starters">
+    <button class="starter-btn share" id="btn-start-share">
+      <span class="icon">📣</span>
+      <div class="lede">I wanted to share&hellip;</div>
+      <div class="hint">An idea, a resource, something happening</div>
+    </button>
+    <button class="starter-btn help" id="btn-start-help">
+      <span class="icon">🤝</span>
+      <div class="lede">You could help me with&hellip;</div>
+      <div class="hint">An intro, advice, expertise you need</div>
+    </button>
+  </div>
+
+  <div class="composer" id="ex-composer" hidden>
+    <div class="lede-line" id="ex-composer-lede"></div>
+    <div class="post-toolbar">
+      <button type="button" class="tb-btn" id="ex-tb-bold" title="Bold"><strong>B</strong></button>
+      <button type="button" class="tb-btn" id="ex-tb-italic" title="Italic"><em>I</em></button>
+      <button type="button" class="tb-btn" id="ex-tb-underline" title="Underline"><u>U</u></button>
+      <button type="button" class="tb-btn" id="ex-tb-bullet" title="Bullet list">&bull; List</button>
+      <button type="button" class="tb-btn" id="ex-tb-indent" title="Indent">&rarr; Indent</button>
+    </div>
+    <textarea id="ex-composer-text" placeholder="Finish the thought… paste a link if there's one to share"></textarea>
+    <div class="composer-hint">Leave a blank line between paragraphs. Paste a URL and it'll show as a link.</div>
+    <div class="composer-row">
+      <select class="tag-select" id="ex-composer-tag"><option value="">No tag</option></select>
+      <span style="flex:1"></span>
+      <button class="btn ghost" id="ex-composer-cancel">Cancel</button>
+      <button class="btn" id="ex-composer-post">Post</button>
+    </div>
+    <div class="save-msg" id="ex-composer-msg"></div>
+  </div>
+
+  <div class="filter-row" id="ex-filter-row">
+    <span class="flabel">Filter</span>
+    <button class="chip active" data-filter="all">All</button>
+  </div>
+  <div class="kind-filter-pill" id="ex-kind-pill" hidden></div>
+
+  <div class="feed" id="ex-feed"></div>
+  <div class="empty" id="ex-empty" hidden>
+    <h3>Nothing here yet</h3>
+    <div>Be the first to post something.</div>
+  </div>
+</main>
+
 <footer>
   AMP 211 · Fall 2026 · a classmate-built directory, not an official HBS site
   <span id="visit-count"></span>
@@ -843,7 +1048,7 @@
           city: row.city, country: row.country, industry: row.industry,
           section: row.section, livingGroup: row.living_group,
           linkedin: row.linkedin, bio: row.bio, email: row.email, photo: row.photo, phone: row.phone,
-          bioManual: !!row.bio_manual
+          bioManual: !!row.bio_manual, digestOptOut: !!row.digest_opt_out
         };
       });
       people.sort(function (a, b) { return (a.name || "").localeCompare(b.name || ""); });
@@ -1565,11 +1770,16 @@
         '<textarea id="f-bio" name="bio">' + esc(p.bioManual ? (p.bio || "") : formatBio(p.bio)) + '</textarea>' +
         '<div class="bio-hint">Leave a blank line between paragraphs. Select text and use B / I / U to format it, click List to start bullets, and Indent to nest a bullet under the one above.</div>' +
       '</div>' +
+      '<div class="opt-out-row"><input type="checkbox" id="f-digest-optout"' + (p.digestOptOut ? " checked" : "") + '>' +
+        '<label for="f-digest-optout">Don’t send me the weekly Exchange digest<div class="sub">You’ll still see everything if you visit The Exchange directly.</div></label></div>' +
       '<div class="save-row"><button type="submit" class="btn">Save changes</button><button type="button" class="btn ghost cancel-edit">Cancel</button><span class="save-msg" id="save-msg"></span></div>' +
       '</form>';
     els.panel.querySelector(".cancel-edit").addEventListener("click", function () { slot.innerHTML = ""; view.style.display = ""; });
     wireBioToolbar(els.panel.querySelector("#f-bio"), els.panel.querySelector("#edit-slot"));
     wireForm(els.panel.querySelector("form.editform"), p);
+    els.panel.querySelector("#f-digest-optout").addEventListener("change", function (e) {
+      db.rpc("set_digest_optout", { p_id: p.id, p_token: state.myTok, p_optout: e.target.checked });
+    });
   }
 
   function wireBioToolbar(textarea, scope) {
@@ -1677,6 +1887,342 @@
       findLinkMsg.className = "save-msg";
     });
   });
+
+  // ================= The Exchange =================
+  var exEls = {
+    tabDirectory: document.getElementById("tab-directory"),
+    tabExchange: document.getElementById("tab-exchange"),
+    viewDirectory: document.getElementById("view-directory"),
+    viewExchange: document.getElementById("view-exchange"),
+    starterShare: document.getElementById("btn-start-share"),
+    starterHelp: document.getElementById("btn-start-help"),
+    composer: document.getElementById("ex-composer"),
+    composerLede: document.getElementById("ex-composer-lede"),
+    composerText: document.getElementById("ex-composer-text"),
+    composerTag: document.getElementById("ex-composer-tag"),
+    composerCancel: document.getElementById("ex-composer-cancel"),
+    composerPost: document.getElementById("ex-composer-post"),
+    composerMsg: document.getElementById("ex-composer-msg"),
+    filterRow: document.getElementById("ex-filter-row"),
+    kindPill: document.getElementById("ex-kind-pill"),
+    feed: document.getElementById("ex-feed"),
+    empty: document.getElementById("ex-empty")
+  };
+
+  var exState = { posts: [], loaded: false, activeTag: "all", kindFilter: null, composerKind: null };
+
+  exEls.tabDirectory.addEventListener("click", function () {
+    exEls.tabDirectory.classList.add("active"); exEls.tabExchange.classList.remove("active");
+    exEls.viewDirectory.hidden = false; exEls.viewExchange.hidden = true;
+  });
+  exEls.tabExchange.addEventListener("click", function () {
+    exEls.tabExchange.classList.add("active"); exEls.tabDirectory.classList.remove("active");
+    exEls.viewExchange.hidden = false; exEls.viewDirectory.hidden = true;
+    if (!exState.loaded) loadExchange();
+  });
+
+  // populate tag select + filter chips from the same industry roll-up the directory uses
+  (function populateExchangeTags() {
+    var tagOpts = INDUSTRY_GROUPS.map(function (g) { return '<option value="' + esc(g[0]) + '">' + esc(g[0]) + '</option>'; }).join("");
+    exEls.composerTag.innerHTML = '<option value="">No tag</option>' + tagOpts + '<option value="General / Social">General / Social</option>';
+
+    var chips = ['<button class="chip active" data-filter="all">All</button>'];
+    INDUSTRY_GROUPS.forEach(function (g) {
+      chips.push('<button class="chip" data-filter="' + esc(g[0]) + '">' + esc(g[0]) + '</button>');
+    });
+    chips.push('<button class="chip" data-filter="General / Social">General / Social</button>');
+    exEls.filterRow.innerHTML = '<span class="flabel">Filter</span>' + chips.join("");
+    exEls.filterRow.querySelectorAll(".chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        exEls.filterRow.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+        chip.classList.add("active");
+        exState.activeTag = chip.getAttribute("data-filter");
+        if (exState.activeTag === "all") exState.kindFilter = null;
+        renderExchange();
+      });
+    });
+  })();
+
+  function requireOwnLink(actionLabel) {
+    if (state.myPid && state.myTok) return true;
+    findLinkScrim.hidden = false;
+    findLinkMsg.textContent = "Open your personal link first to " + actionLabel + " — enter your email below to get it.";
+    findLinkMsg.className = "save-msg";
+    document.getElementById("find-link-email").focus();
+    return false;
+  }
+
+  function openExComposer(kind) {
+    if (!requireOwnLink("post to The Exchange")) return;
+    exState.composerKind = kind;
+    exEls.composerLede.textContent = kind === "share" ? "I wanted to share…" : "You could help me with…";
+    exEls.composerText.value = "";
+    exEls.composerMsg.textContent = "";
+    exEls.composer.hidden = false;
+    exEls.composerText.focus();
+    exEls.composer.scrollIntoView({ behavior: "smooth", block: "center" });
+    exState.kindFilter = kind;
+    renderExchange();
+  }
+  exEls.starterShare.addEventListener("click", function () { openExComposer("share"); });
+  exEls.starterHelp.addEventListener("click", function () { openExComposer("help"); });
+  exEls.composerCancel.addEventListener("click", function () {
+    exEls.composer.hidden = true; exState.kindFilter = null; renderExchange();
+  });
+
+  function wireExToolbar() {
+    var ta = exEls.composerText;
+    function wrapSelection(before, after) {
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      var val = ta.value;
+      var selected = val.slice(s, e) || "text";
+      ta.value = val.slice(0, s) + before + selected + after + val.slice(e);
+      ta.focus();
+      ta.selectionStart = s + before.length;
+      ta.selectionEnd = s + before.length + selected.length;
+    }
+    function eachSelectedLine(fn) {
+      var s = ta.selectionStart, e = ta.selectionEnd;
+      var val = ta.value;
+      var lineStart = val.lastIndexOf("\n", s - 1) + 1;
+      var lineEnd = val.indexOf("\n", e);
+      if (lineEnd === -1) lineEnd = val.length;
+      var block = val.slice(lineStart, lineEnd);
+      var newBlock = block.split("\n").map(fn).join("\n");
+      ta.value = val.slice(0, lineStart) + newBlock + val.slice(lineEnd);
+      ta.focus();
+    }
+    document.getElementById("ex-tb-bold").addEventListener("click", function () { wrapSelection("**", "**"); });
+    document.getElementById("ex-tb-italic").addEventListener("click", function () { wrapSelection("*", "*"); });
+    document.getElementById("ex-tb-underline").addEventListener("click", function () { wrapSelection("__", "__"); });
+    document.getElementById("ex-tb-bullet").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return /^\s*[-•]\s+/.test(l) ? l : "- " + l; });
+    });
+    document.getElementById("ex-tb-indent").addEventListener("click", function () {
+      eachSelectedLine(function (l) { return "  " + l; });
+    });
+  }
+  wireExToolbar();
+
+  exEls.composerPost.addEventListener("click", function () {
+    if (!requireOwnLink("post to The Exchange")) return;
+    var text = exEls.composerText.value.trim();
+    if (!text) { exEls.composerText.focus(); return; }
+    var lede = exState.composerKind === "share" ? "I wanted to share " : "You could help me with ";
+    var tag = exEls.composerTag.value;
+    exEls.composerMsg.textContent = "Posting…"; exEls.composerMsg.className = "save-msg";
+    db.rpc("create_exchange_post", {
+      p_id: state.myPid, p_token: state.myTok, p_kind: exState.composerKind, p_text: lede + text, p_tag: tag
+    }).then(function (res) {
+      if (res.error) { exEls.composerMsg.textContent = "Couldn't post. Try again."; return; }
+      exEls.composer.hidden = true;
+      loadExchange();
+    });
+  });
+
+  function inlinePostFormat(escapedText) {
+    var t = escapedText.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/__(.+?)__/g, "<u>$1</u>");
+    t = t.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    return t.replace(/(https?:\/\/[^\s<]+)/g, function (url) {
+      var clean = url.replace(/[),.;:!?]+$/, "");
+      var trailing = url.slice(clean.length);
+      var display = clean.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      if (display.length > 42) display = display.slice(0, 42) + "…";
+      return '<a href="' + clean + '" target="_blank" rel="noopener" class="post-link">' + display + "</a>" + trailing;
+    });
+  }
+  function exBulletIndentLevel(line) {
+    var m = line.match(/^(\s*)[-•]/);
+    var ws = m ? m[1].replace(/\t/g, "  ") : "";
+    return ws.length;
+  }
+  function buildExBulletHtml(rawLines) {
+    var raw = rawLines.map(function (l) { return { level: exBulletIndentLevel(l), text: l.replace(/^\s*[-•]\s+/, "") }; });
+    var minLevel = Math.min.apply(null, raw.map(function (i) { return i.level; }));
+    var items = raw.map(function (i) { return { level: Math.floor((i.level - minLevel) / 2), text: i.text }; });
+    var html = "", stack = [];
+    items.forEach(function (item) {
+      while (stack.length && stack[stack.length - 1] > item.level) { html += "</li></ul>"; stack.pop(); }
+      if (!stack.length || stack[stack.length - 1] < item.level) { html += "<ul>"; stack.push(item.level); }
+      else { html += "</li>"; }
+      html += "<li>" + inlinePostFormat(esc(item.text));
+    });
+    while (stack.length) { html += "</li></ul>"; stack.pop(); }
+    return html;
+  }
+  function renderPostBody(text) {
+    var raw = (text || "").trim();
+    if (!raw) return "";
+    var blocks = raw.replace(/\r\n/g, "\n").split(/\n\s*\n/).map(function (b) { return b.replace(/^\n+|\n+$/g, ""); }).filter(function (b) { return b.trim().length; });
+    return blocks.map(function (block) {
+      var rawLines = block.split("\n").filter(function (l) { return l.trim().length; });
+      var isBulletBlock = rawLines.length > 0 && rawLines.every(function (l) { return /^\s*[-•]\s+/.test(l); });
+      if (isBulletBlock) return buildExBulletHtml(rawLines);
+      var lines = rawLines.map(function (l) { return l.trim(); });
+      return "<p>" + lines.map(function (l) { return inlinePostFormat(esc(l)); }).join("<br>") + "</p>";
+    }).join("");
+  }
+
+  function loadExchange() {
+    exEls.feed.innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:30px 0;">Loading…</div>';
+    Promise.all([
+      db.from("exchange_posts_public").select("*").order("created_at", { ascending: false }),
+      db.from("exchange_comments_public").select("*"),
+      db.from("exchange_reactions_public").select("*")
+    ]).then(function (results) {
+      var postsRes = results[0], commentsRes = results[1], reactionsRes = results[2];
+      if (postsRes.error) { exEls.feed.innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:30px 0;">Couldn\'t load The Exchange. Try reloading.</div>'; return; }
+      var comments = commentsRes.data || [];
+      var reactions = reactionsRes.data || [];
+      exState.posts = (postsRes.data || []).map(function (p) {
+        return {
+          id: p.id, pid: p.pid, kind: p.kind, text: p.text, tag: p.tag, createdAt: p.created_at,
+          authorName: p.author_name, authorPhoto: p.author_photo,
+          comments: comments.filter(function (c) { return c.post_id === p.id; }),
+          reactionCount: reactions.filter(function (r) { return r.post_id === p.id; }).length,
+          iReacted: !!(state.myPid && reactions.some(function (r) { return r.post_id === p.id && r.pid === state.myPid; }))
+        };
+      });
+      exState.loaded = true;
+      renderExchange();
+    });
+  }
+
+  function timeAgo(iso) {
+    var diff = Date.now() - new Date(iso).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return mins + "m ago";
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + "h ago";
+    var days = Math.floor(hrs / 24);
+    if (days < 7) return days + "d ago";
+    return new Date(iso).toLocaleDateString();
+  }
+
+  function exAvatar(p) {
+    if (p.authorPhoto) return '<img class="av" src="photos/' + esc(p.authorPhoto) + '" alt="">';
+    return '<div class="av">' + esc(initials(p.authorName || "?")) + '</div>';
+  }
+
+  function waShareHref(p) {
+    var lede = p.kind === "share" ? "📣 Shared on The Exchange: " : "🤝 Help wanted on The Exchange: ";
+    var msg = lede + p.text + "\n\n— posted by " + p.authorName + "\nhbsamp211.com";
+    return "https://wa.me/?text=" + encodeURIComponent(msg);
+  }
+
+  function renderExchange() {
+    if (exState.kindFilter) {
+      exEls.kindPill.hidden = false;
+      exEls.kindPill.innerHTML = (exState.kindFilter === "share" ? "📣 Showing shared posts only" : "🤝 Showing help-wanted posts only") +
+        ' <button id="ex-kind-clear" aria-label="Clear">✕</button>';
+      document.getElementById("ex-kind-clear").addEventListener("click", function () { exState.kindFilter = null; renderExchange(); });
+    } else {
+      exEls.kindPill.hidden = true;
+    }
+
+    var visible = exState.posts.filter(function (p) {
+      if (exState.kindFilter && p.kind !== exState.kindFilter) return false;
+      if (exState.activeTag !== "all" && p.tag !== exState.activeTag) return false;
+      return true;
+    });
+
+    exEls.empty.hidden = visible.length > 0;
+    exEls.feed.innerHTML = visible.map(function (p) {
+      var kindLabel = p.kind === "share" ? "📣 Shared" : "🤝 Help wanted";
+      var tagHtml = p.tag ? '<span class="tag">' + esc(p.tag) + "</span>" : "";
+      var isMine = state.myPid && p.pid === state.myPid;
+      var commentsHtml = p.comments.map(function (c) {
+        return '<div class="comment"><div class="av">' + esc(initials(c.author_name || "?")) + '</div>' +
+          '<div class="comment-body"><span class="cname">' + esc(c.author_name) + '</span>' + esc(c.text) + '</div></div>';
+      }).join("");
+      return '' +
+        '<article class="post kind-' + p.kind + '">' +
+          '<div class="post-top">' + exAvatar(p) +
+            '<div class="post-meta">' +
+              '<div class="name-row"><span class="name">' + esc(p.authorName) + '</span>' +
+                '<span class="kind-pill ' + p.kind + '">' + kindLabel + '</span>' +
+                '<span class="when">' + esc(timeAgo(p.createdAt)) + '</span></div>' +
+              '<div class="post-body">' + renderPostBody(p.text) + '</div>' +
+              '<div class="post-tags">' + tagHtml + '</div>' +
+              '<div class="post-actions">' +
+                '<button class="action-btn can-help' + (p.iReacted ? ' active' : '') + '" data-action="help" data-id="' + p.id + '">I can help · ' + p.reactionCount + '</button>' +
+                '<button class="action-btn" data-action="comment" data-id="' + p.id + '">' + p.comments.length + (p.comments.length === 1 ? " reply" : " replies") + '</button>' +
+                '<button class="action-btn wa" data-action="wa" data-id="' + p.id + '">Share to WhatsApp</button>' +
+                (isMine ? '<button class="action-btn del" data-action="del" data-id="' + p.id + '">Delete</button>' : '') +
+              '</div>' +
+              '<div class="comments" id="ex-comments-' + p.id + '">' + commentsHtml +
+                '<div class="comment-form"><input type="text" placeholder="Reply…" id="ex-reply-' + p.id + '">' +
+                '<button data-action="reply" data-id="' + p.id + '">Send</button></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+    }).join("");
+
+    exEls.feed.querySelectorAll('[data-action="help"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!requireOwnLink("react to a post")) return;
+        var id = +btn.getAttribute("data-id");
+        db.rpc("toggle_exchange_reaction", { p_id: state.myPid, p_token: state.myTok, p_post_id: id }).then(function () { loadExchange(); });
+      });
+    });
+    exEls.feed.querySelectorAll('[data-action="comment"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.getElementById("ex-comments-" + btn.getAttribute("data-id")).classList.toggle("open");
+      });
+    });
+    exEls.feed.querySelectorAll('[data-action="wa"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = +btn.getAttribute("data-id");
+        var p = exState.posts.find(function (x) { return x.id === id; });
+        if (p) window.open(waShareHref(p), "_blank");
+      });
+    });
+    exEls.feed.querySelectorAll('[data-action="del"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!requireOwnLink("delete a post")) return;
+        var id = +btn.getAttribute("data-id");
+        db.rpc("delete_exchange_post", { p_id: state.myPid, p_token: state.myTok, p_post_id: id }).then(function () { loadExchange(); });
+      });
+    });
+    exEls.feed.querySelectorAll('[data-action="reply"]').forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!requireOwnLink("reply")) return;
+        var id = +btn.getAttribute("data-id");
+        var input = document.getElementById("ex-reply-" + id);
+        var val = input.value.trim();
+        if (!val) return;
+        db.rpc("create_exchange_comment", { p_id: state.myPid, p_token: state.myTok, p_post_id: id, p_text: val }).then(function () { loadExchange(); });
+      });
+    });
+  }
+
+  // ---------- unsubscribe from the weekly digest ----------
+  (function handleUnsubscribe() {
+    var unsubPid = qp.get("unsub"), unsubTok = qp.get("tok");
+    if (!unsubPid || !unsubTok) return;
+    document.querySelector(".toptabs").hidden = true;
+    exEls.viewDirectory.hidden = true;
+    exEls.viewExchange.hidden = true;
+    var card = document.createElement("div");
+    card.className = "unsub-card";
+    card.innerHTML =
+      '<div class="glyph">🔕</div><h2>Stop the weekly digest?</h2>' +
+      '<p>You\'ll stop getting the weekly Exchange recap. You can turn it back on anytime from your profile\'s edit page.</p>' +
+      '<div class="unsub-actions"><button class="btn" id="unsub-confirm">Yes, unsubscribe me</button>' +
+      '<button class="btn ghost" id="unsub-cancel">Never mind</button></div>';
+    document.querySelector("main#view-directory").insertAdjacentElement("afterend", card);
+    document.getElementById("unsub-cancel").addEventListener("click", function () { window.location.href = location.pathname; });
+    document.getElementById("unsub-confirm").addEventListener("click", function () {
+      db.rpc("set_digest_optout", { p_id: unsubPid, p_token: unsubTok, p_optout: true }).then(function (res) {
+        card.innerHTML = res.error
+          ? '<div class="glyph">⚠️</div><h2>Something went wrong</h2><p>That link may be invalid. Try again from your profile edit page.</p>'
+          : '<div class="glyph">✓</div><h2>You\'re unsubscribed</h2><p>You won\'t get the weekly digest anymore.</p>';
+      });
+    });
+  })();
 })();
 </script>
 <script>
