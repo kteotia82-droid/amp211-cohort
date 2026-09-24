@@ -1052,33 +1052,36 @@
   var SUPABASE_ANON_KEY = "sb_publishable_YVWtfDr9qLMwWJKcdZ5OQA_ri2aUVIL";
   var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  boot();
+  // Gate: the homepage requires a signed-in session. Check first, before
+  // loading any data — an unsigned-in visitor gets redirected to the
+  // login page rather than seeing an empty/broken page.
+  db.auth.getSession().then(function (res) {
+    var session = res.data && res.data.session;
+    if (!session || !session.user || !session.user.email) {
+      location.href = "login.html";
+      return;
+    }
+    showAuthStatus(session.user.email);
+    boot();
+  });
 
   function boot() {
     loadPeople(function () { maybeOpenOwnProfile(); });
     trackVisit();
-    checkAuthStatus();
   }
 
-  // Shows who's signed in (from the private login.html test page) with a
-  // Sign out control, if anyone is. Most visitors have no session yet —
-  // the site itself isn't gated on this.
-  function checkAuthStatus() {
+  function showAuthStatus(email) {
     var el = document.getElementById("auth-status");
-    db.auth.getSession().then(function (res) {
-      var session = res.data && res.data.session;
-      if (!session || !session.user || !session.user.email) return;
-      el.hidden = false;
-      el.textContent = "Signed in as " + session.user.email;
-      var signOutBtn = document.createElement("button");
-      signOutBtn.textContent = "Sign out";
-      signOutBtn.addEventListener("click", function () {
-        db.auth.signOut().then(function () {
-          location.href = "login.html";
-        });
+    el.hidden = false;
+    el.textContent = "Signed in as " + email;
+    var signOutBtn = document.createElement("button");
+    signOutBtn.textContent = "Sign out";
+    signOutBtn.addEventListener("click", function () {
+      db.auth.signOut().then(function () {
+        location.href = "login.html";
       });
-      el.appendChild(signOutBtn);
     });
+    el.appendChild(signOutBtn);
   }
 
   // Counts at most one visit per device per day (via localStorage), so
