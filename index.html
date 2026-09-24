@@ -2096,11 +2096,10 @@
     if (!requireOwnLink("post to The Exchange")) return;
     var text = exEls.composerText.value.trim();
     if (!text) { exEls.composerText.focus(); return; }
-    var lede = exState.composerKind === "share" ? "I wanted to share " : "You could help me with ";
     var tag = exEls.composerTag.value;
     exEls.composerMsg.textContent = "Posting…"; exEls.composerMsg.className = "save-msg";
     db.rpc("create_exchange_post", {
-      p_id: state.myPid, p_token: state.myTok, p_kind: exState.composerKind, p_text: lede + text, p_tag: tag
+      p_id: state.myPid, p_token: state.myTok, p_kind: exState.composerKind, p_text: text, p_tag: tag
     }).then(function (res) {
       if (res.error) { exEls.composerMsg.textContent = "Couldn't post. Try again."; return; }
       exEls.composer.hidden = true;
