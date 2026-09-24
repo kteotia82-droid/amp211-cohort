@@ -142,7 +142,7 @@
   }
 
   /* ---------- Filter strip ---------- */
-  .filters { max-width: 1180px; margin: 0 auto; padding: 0 24px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .filters { margin: 0 0 20px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .filters[hidden] { display: none; }
   .filters .flabel { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin-right: 2px; }
   select.filter, .clear-btn {
@@ -395,6 +395,27 @@
   }
   .toptab.active { color: var(--ink); border-bottom-color: var(--accent); }
 
+  /* ---------- Mobile bottom app-style nav ---------- */
+  .bottomnav { display: none; }
+  @media (max-width: 720px) {
+    .toptabs { display: none; }
+    .bottomnav {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+      background: var(--surface); border-top: 1px solid var(--line);
+      padding: 6px 10px calc(6px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .bottomnav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: none; padding: 6px 4px; cursor: pointer; color: var(--ink-faint);
+      font-family: "IBM Plex Sans", sans-serif; font-size: 11px; font-weight: 500;
+    }
+    .bottomnav-btn svg { width: 22px; height: 22px; }
+    .bottomnav-btn.active { color: var(--accent); }
+    main, #view-exchange { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+    footer { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+  }
+
   /* ---------- The Exchange ---------- */
   #view-exchange { max-width: 1120px; margin: 0 auto; padding: 24px; }
   .exchange-intro h2 { font-size: 25px; }
@@ -545,6 +566,25 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2.5-3 4.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/></svg>
     </a>
   </div>
+</header>
+
+<div class="toptabs">
+  <button class="toptab active" id="tab-directory">🗺️ Directory</button>
+  <button class="toptab" id="tab-exchange">💬 The Exchange</button>
+</div>
+
+<nav class="bottomnav">
+  <button class="bottomnav-btn active" id="bnav-directory">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <span>Directory</span>
+  </button>
+  <button class="bottomnav-btn" id="bnav-exchange">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+    <span>Exchange</span>
+  </button>
+</nav>
+
+<main id="view-directory">
   <div class="filters" id="directory-filters">
     <span class="flabel">Filter</span>
     <select class="filter" id="f-country"><option value="">Country</option></select>
@@ -553,14 +593,6 @@
     <select class="filter" id="f-livinggroup"><option value="">Living Group</option></select>
     <button class="clear-btn" id="clear-filters">Clear filters ✕</button>
   </div>
-</header>
-
-<div class="toptabs">
-  <button class="toptab active" id="tab-directory">🗺️ Directory</button>
-  <button class="toptab" id="tab-exchange">💬 The Exchange</button>
-</div>
-
-<main id="view-directory">
   <section class="directory" id="directory">
     <h2>Directory</h2>
     <p class="dir-sub" id="dir-sub">Every profile below is editable by its owner via their personal link.</p>
@@ -1913,17 +1945,25 @@
   var exState = { posts: [], loaded: false, activeTag: "all", kindFilter: null, composerKind: null };
 
   var directoryFilters = document.getElementById("directory-filters");
-  exEls.tabDirectory.addEventListener("click", function () {
+  var bnavDirectory = document.getElementById("bnav-directory");
+  var bnavExchange = document.getElementById("bnav-exchange");
+  function showDirectoryTab() {
     exEls.tabDirectory.classList.add("active"); exEls.tabExchange.classList.remove("active");
+    bnavDirectory.classList.add("active"); bnavExchange.classList.remove("active");
     exEls.viewDirectory.hidden = false; exEls.viewExchange.hidden = true;
     directoryFilters.hidden = false;
-  });
-  exEls.tabExchange.addEventListener("click", function () {
+  }
+  function showExchangeTab() {
     exEls.tabExchange.classList.add("active"); exEls.tabDirectory.classList.remove("active");
+    bnavExchange.classList.add("active"); bnavDirectory.classList.remove("active");
     exEls.viewExchange.hidden = false; exEls.viewDirectory.hidden = true;
     directoryFilters.hidden = true;
     if (!exState.loaded) loadExchange();
-  });
+  }
+  exEls.tabDirectory.addEventListener("click", showDirectoryTab);
+  exEls.tabExchange.addEventListener("click", showExchangeTab);
+  bnavDirectory.addEventListener("click", showDirectoryTab);
+  bnavExchange.addEventListener("click", showExchangeTab);
 
   // populate tag select + filter chips from the same industry roll-up the directory uses
   (function populateExchangeTags() {
