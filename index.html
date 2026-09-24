@@ -854,7 +854,7 @@
 
   <div class="filter-row" id="ex-filter-row">
     <span class="flabel">Filter</span>
-    <button class="chip active" data-filter="all">All</button>
+    <select class="filter" id="ex-tag-filter"><option value="all">All industries</option></select>
   </div>
   <div class="kind-filter-pill" id="ex-kind-pill" hidden></div>
 
@@ -1965,25 +1965,18 @@
   bnavDirectory.addEventListener("click", showDirectoryTab);
   bnavExchange.addEventListener("click", showExchangeTab);
 
-  // populate tag select + filter chips from the same industry roll-up the directory uses
+  // populate the composer's tag select and the feed's filter dropdown from
+  // the same industry roll-up the directory uses
   (function populateExchangeTags() {
     var tagOpts = INDUSTRY_GROUPS.map(function (g) { return '<option value="' + esc(g[0]) + '">' + esc(g[0]) + '</option>'; }).join("");
     exEls.composerTag.innerHTML = '<option value="">No tag</option>' + tagOpts + '<option value="General / Social">General / Social</option>';
 
-    var chips = ['<button class="chip active" data-filter="all">All</button>'];
-    INDUSTRY_GROUPS.forEach(function (g) {
-      chips.push('<button class="chip" data-filter="' + esc(g[0]) + '">' + esc(g[0]) + '</button>');
-    });
-    chips.push('<button class="chip" data-filter="General / Social">General / Social</button>');
-    exEls.filterRow.innerHTML = '<span class="flabel">Filter</span>' + chips.join("");
-    exEls.filterRow.querySelectorAll(".chip").forEach(function (chip) {
-      chip.addEventListener("click", function () {
-        exEls.filterRow.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
-        chip.classList.add("active");
-        exState.activeTag = chip.getAttribute("data-filter");
-        if (exState.activeTag === "all") exState.kindFilter = null;
-        renderExchange();
-      });
+    var tagFilter = document.getElementById("ex-tag-filter");
+    tagFilter.innerHTML = '<option value="all">All industries</option>' + tagOpts + '<option value="General / Social">General / Social</option>';
+    tagFilter.addEventListener("change", function () {
+      exState.activeTag = tagFilter.value;
+      if (exState.activeTag === "all") exState.kindFilter = null;
+      renderExchange();
     });
   })();
 
