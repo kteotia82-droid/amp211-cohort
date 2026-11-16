@@ -194,6 +194,25 @@
   .secretary .lrole { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
   .secretary .lname { background: none; border: none; padding: 0; font: inherit; font-weight: 600; font-size: 14.5px; color: var(--ink); cursor: pointer; }
   .secretary .lname:hover { color: var(--accent); text-decoration: underline; }
+  .leader-box { gap: 10px; padding: 12px; }
+  .leader-box .lrole { font-size: 13px; text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--ink); }
+  .leader-box .lwho { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .leader-box .lsub { font-size: 12px; color: var(--ink-soft-solid); margin-top: 2px; }
+  .leader-box .lacts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .leader-box .lacts .icon-link, .leader-box .lacts .lall { width: auto; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer; text-decoration: none; }
+  .leader-box .lacts svg { width: 16px; height: 16px; }
+  .leader-box .lacts .lall:hover, .leader-box .lacts .icon-link:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .leader-grid.sec { margin-top: 10px; }
+  @media (max-width: 720px) {
+    .leader-box { padding: 8px; gap: 8px; }
+    .leader-box .lrole { font-size: 11.5px; }
+    .leader-box .lwho { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .leader-box .lname { font-size: 13px; }
+    .leader-box .lsub { display: none; }
+    .leader-box .lacts { gap: 4px; }
+    .leader-box .lacts .icon-link, .leader-box .lacts .lall { height: 28px; min-width: 28px; padding: 0 5px; }
+    .leader-box .lacts .lall .n { display: none; }
+  }
   @media (max-width: 720px) { .leader-grid { grid-template-columns: repeat(3, 1fr); } }
   .lead-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ink); background: var(--chip-bg); border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 10px; }
   .rmail-body { font-size: 13.5px; line-height: 1.6; color: var(--ink-soft-solid); }
@@ -1035,22 +1054,34 @@
     renderLeaders();
   }
 
+  function leaderBoxHtml(label, cls, p, sub, allKey, allCount) {
+    var wa = p.phone ? whatsappUrl(p.phone) : "";
+    return '<div class="leader-box ' + (cls || "") + '"><div class="lrole">' + (cls ? '<span class="rdot ' + cls + '"></span>' : "") + esc(label) + '</div>' +
+      '<div class="lwho">' + avatarHtml(p, 44) + '<div><button class="lname" data-open="' + esc(p.id) + '">' + esc(p.name) + '</button><div class="lsub">' + esc(sub) + '</div></div></div>' +
+      '<div class="lacts">' +
+        (p.email ? '<a class="icon-link" href="mailto:' + esc(p.email) + '" title="Email ' + esc(p.name) + '" aria-label="Email ' + esc(p.name) + '">' + MAIL_ICON + '</a>' : '') +
+        (wa ? '<a class="icon-link" href="' + esc(wa) + '" target="_blank" rel="noopener" title="WhatsApp ' + esc(p.name) + '" aria-label="WhatsApp ' + esc(p.name) + '">' + WHATSAPP_ICON + '</a>' : '') +
+        '<button class="lall" type="button" data-all="' + esc(allKey) + '" title="' + esc(allKey === "__reps" ? "Email the six regional reps" : "Email everyone in " + allKey) + '" aria-label="' + esc(allKey === "__reps" ? "Email the six regional reps" : "Email everyone in " + allKey) + '">' + PEOPLE_ICON + '<span class="n">' + allCount + '</span></button>' +
+      '</div></div>';
+  }
+
   function renderLeaders() {
     var el = document.getElementById("leaders");
     if (!el || !state.people.length) return;
     var boxes = REGIONS.map(function (r) {
       var p = personById(r.lead);
-      if (!p) return "";
-      return '<div class="leader-box ' + r.cls + '">' + avatarHtml(p, 44) + '<div class="lrole"><span class="rdot ' + r.cls + '"></span>' + esc(r.key) + '</div>' +
-        '<button class="lname" data-open="' + esc(p.id) + '">' + esc(p.name) + '</button>' +
-        (p.email ? '<a class="icon-link" href="mailto:' + esc(p.email) + '" title="Email ' + esc(p.name) + '" aria-label="Email ' + esc(p.name) + '">' + MAIL_ICON + '</a>' : '') +
-        '</div>';
+      return p ? leaderBoxHtml(r.key, r.cls, p, "Regional lead", r.key, regionMembers(r).length) : "";
     }).join("");
     var sec = personById(SECRETARY_ID);
     el.innerHTML = '<h2>Regional representatives</h2><div class="leader-grid">' + boxes + '</div>' +
-      (sec ? '<div class="secretary">' + avatarHtml(sec, 44) + '<span class="lrole">Class Secretary</span><button class="lname" data-open="' + esc(sec.id) + '">' + esc(sec.name) + '</button>' +
-        (sec.email ? '<a class="icon-link" href="mailto:' + esc(sec.email) + '" title="Email ' + esc(sec.name) + '" aria-label="Email ' + esc(sec.name) + '">' + MAIL_ICON + '</a>' : '') + '</div>' : '');
+      (sec ? '<div class="leader-grid sec">' + leaderBoxHtml("Class Secretary", "", sec, "Class Secretary", "__reps", repEmails().length) + '</div>' : '');
     el.querySelectorAll("[data-open]").forEach(function (b) { b.addEventListener("click", function () { openDetail(b.dataset.open); }); });
+    el.querySelectorAll("[data-all]").forEach(function (b) {
+      b.addEventListener("click", function () { b.dataset.all === "__reps" ? openRepsMail() : openRegionMail(b.dataset.all); });
+    });
+  }
+  function repEmails() {
+    return REGIONS.map(function (r) { var p = personById(r.lead); return p && p.email ? p.email.trim() : ""; }).filter(Boolean);
   }
 
   function leaderBadgeHtml(p) {
@@ -1088,13 +1119,11 @@
       document.body.removeChild(ta); resolve();
     });
   }
-  function openRegionMail(key) {
-    var r = regionByKey(key); if (!r) return;
-    var emails = regionMembers(r).map(function (p) { return (p.email || "").trim(); }).filter(Boolean);
+  function openMailDialog(title, emails, who) {
     var mailto = "mailto:?bcc=" + emails.map(encodeURIComponent).join(",");
-    document.getElementById("rmail-title").textContent = "Email " + key;
+    document.getElementById("rmail-title").textContent = title;
     var body = document.getElementById("rmail-body");
-    body.innerHTML = '<p class="rmail-body">' + emails.length + ' classmates in ' + esc(key) + '. Everyone goes in <strong>BCC</strong>, so addresses stay private.</p>' +
+    body.innerHTML = '<p class="rmail-body">' + emails.length + ' ' + who + '. Everyone goes in <strong>BCC</strong>, so addresses stay private.</p>' +
       '<div class="rmail-actions"><a class="btn" id="rmail-open" href="' + esc(mailto) + '">Open in my email app</a>' +
       '<button class="btn" id="rmail-copy" type="button">Copy addresses</button><span class="save-msg" id="rmail-msg"></span></div>' +
       (mailto.length > 1800 ? '<p class="rmail-body" style="margin-top:12px">This is a long list, so if your email app does not open, use “Copy addresses” and paste them into BCC.</p>' : '');
@@ -1103,6 +1132,12 @@
     });
     rmailScrim.hidden = false;
   }
+  function openRegionMail(key) {
+    var r = regionByKey(key); if (!r) return;
+    var emails = regionMembers(r).map(function (p) { return (p.email || "").trim(); }).filter(Boolean);
+    openMailDialog("Email " + key, emails, "classmates in " + esc(key));
+  }
+  function openRepsMail() { openMailDialog("Email the regional reps", repEmails(), "regional representatives"); }
 
   var els = {
     search: document.getElementById("search"),
@@ -1944,6 +1979,7 @@
 
   function tagHtml(icon, text) { return text ? '<span class="tag">' + icon + " " + esc(text) + "</span>" : ""; }
 
+  var PEOPLE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
   var MAIL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>';
   var LINKEDIN_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2ZM8 19H5v-9h3ZM6.5 8.7A1.7 1.7 0 1 1 8.2 7a1.7 1.7 0 0 1-1.7 1.7ZM19 19h-3v-4.6c0-1.1 0-2.5-1.5-2.5s-1.8 1.2-1.8 2.4V19h-3v-9h2.9v1.3h.04a3.2 3.2 0 0 1 2.88-1.6c3.1 0 3.66 2 3.66 4.7Z"/></svg>';
   function linkedinUrl(v) {
