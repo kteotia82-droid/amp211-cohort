@@ -152,6 +152,72 @@
   .clear-btn { color: var(--accent); border-color: var(--accent-soft-line); background: var(--accent-soft); display: none; }
   .clear-btn.show { display: inline-flex; }
 
+  /* ---------- Regions ---------- */
+  :root {
+    --r-eu: #3a6fb0; --r-am: #c0452f; --r-ap: #2f8f6b; --r-oc: #8a5bb5; --r-me: #c98f1c; --r-af: #1f8ea3;
+  }
+  .map-dot.r-eu, .map-dot-halo.r-eu, .rdot.r-eu { fill: var(--r-eu); background: var(--r-eu); }
+  .map-dot.r-am, .map-dot-halo.r-am, .rdot.r-am { fill: var(--r-am); background: var(--r-am); }
+  .map-dot.r-ap, .map-dot-halo.r-ap, .rdot.r-ap { fill: var(--r-ap); background: var(--r-ap); }
+  .map-dot.r-oc, .map-dot-halo.r-oc, .rdot.r-oc { fill: var(--r-oc); background: var(--r-oc); }
+  .map-dot.r-me, .map-dot-halo.r-me, .rdot.r-me { fill: var(--r-me); background: var(--r-me); }
+  .map-dot.r-af, .map-dot-halo.r-af, .rdot.r-af { fill: var(--r-af); background: var(--r-af); }
+  .rdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .regionrow { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; }
+  .rchip {
+    display: inline-flex; align-items: stretch; border: 1px solid var(--line-strong); border-radius: 999px;
+    background: var(--surface); overflow: hidden;
+  }
+  .rchip.active { border-color: var(--ink); background: var(--ink); }
+  .rchip button { background: none; border: none; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; }
+  .rchip .rchip-main small { color: var(--ink-faint); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .rchip .rchip-mail { padding: 6px 9px 6px 7px; border-left: 1px solid var(--line); color: var(--ink-soft-solid); }
+  .rchip .rchip-mail svg { width: 14px; height: 14px; }
+  .rchip.active .rchip-main, .rchip.active .rchip-main small, .rchip.active .rchip-mail { color: var(--bg); }
+  .rchip.active .rchip-mail { border-left-color: rgba(255,255,255,.25); }
+  .map-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; padding: 2px 8px 10px; font-size: 12px; color: var(--ink-soft-solid); }
+  .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  section.leaders { margin: 8px 0 36px; }
+  section.leaders h2 { font-size: 19px; font-weight: 600; margin: 0 0 12px; }
+  .leader-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .leader-box { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 12px 12px 10px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .leader-box .lrole { display: flex; align-items: center; gap: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
+  .leader-box .lname { background: none; border: none; padding: 0; text-align: left; font: inherit; font-weight: 600; font-size: 14.5px; color: var(--ink); cursor: pointer; line-height: 1.3; overflow-wrap: anywhere; }
+  .leader-box .lname:hover { color: var(--accent); text-decoration: underline; }
+  .leader-box .icon-link { align-self: flex-start; }
+  .leader-box.r-eu { --rc: var(--r-eu); } .leader-box.r-am { --rc: var(--r-am); } .leader-box.r-ap { --rc: var(--r-ap); }
+  .leader-box.r-oc { --rc: var(--r-oc); } .leader-box.r-me { --rc: var(--r-me); } .leader-box.r-af { --rc: var(--r-af); }
+  .leader-box { background: color-mix(in srgb, var(--rc, var(--ink-faint)) 14%, var(--surface)); border-color: color-mix(in srgb, var(--rc, var(--line)) 45%, var(--line)); }
+  .leader-box .avatar, .secretary .avatar { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; flex: none; background: var(--chip-bg); }
+  .secretary { margin-top: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 14px; }
+  .secretary .lrole { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); }
+  .secretary .lname { background: none; border: none; padding: 0; font: inherit; font-weight: 600; font-size: 14.5px; color: var(--ink); cursor: pointer; }
+  .secretary .lname:hover { color: var(--accent); text-decoration: underline; }
+  .leader-box { gap: 10px; padding: 12px; }
+  .leader-box .lrole { font-size: 13px; text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--ink); }
+  .leader-box .lwho { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .leader-box .lsub { font-size: 12px; color: var(--ink-soft-solid); margin-top: 2px; }
+  .leader-box .lacts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .leader-box .lacts .icon-link, .leader-box .lacts .lall { width: auto; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer; text-decoration: none; }
+  .leader-box .lacts svg { width: 16px; height: 16px; }
+  .leader-box .lacts .lall:hover, .leader-box .lacts .icon-link:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .leader-grid.sec { margin-top: 10px; }
+  @media (max-width: 720px) {
+    .leader-box { padding: 8px; gap: 8px; }
+    .leader-box .lrole { font-size: 11.5px; }
+    .leader-box .lwho { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .leader-box .lname { font-size: 13px; }
+    .leader-box .lsub { display: none; }
+    .leader-box .lacts { gap: 4px; }
+    .leader-box .lacts .icon-link, .leader-box .lacts .lall { height: 28px; min-width: 28px; padding: 0 5px; }
+    .leader-box .lacts .lall .n { display: none; }
+  }
+  @media (max-width: 720px) { .leader-grid { grid-template-columns: repeat(3, 1fr); } }
+  .lead-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ink); background: var(--chip-bg); border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 10px; }
+  .rmail-body { font-size: 13.5px; line-height: 1.6; color: var(--ink-soft-solid); }
+  .rmail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+
   main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
 
   /* ---------- World section ---------- */
@@ -263,6 +329,8 @@
     padding: 14px; display: flex; gap: 12px; text-align: left; cursor: pointer;
     box-shadow: var(--shadow); transition: transform .12s ease, border-color .12s ease;
   }
+  .card.is-lead { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .card .lead-tag { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
   .card:hover { border-color: var(--accent-soft-line); transform: translateY(-1px); }
   .card .avatar { width: 52px; height: 52px; border-radius: 11px; object-fit: cover; flex: none; background: var(--chip-bg); }
   .card .meta { min-width: 0; }
@@ -352,6 +420,7 @@
   }
   .btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent-soft-line); }
   .btn:hover { filter: brightness(1.06); }
+  a.btn { display: inline-block; text-decoration: none; }
 
   form.editform { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
   form.editform label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-faint); display: block; margin-bottom: 4px; }
@@ -595,6 +664,7 @@
 
 <main id="view-directory">
   <div class="filters" id="directory-filters">
+    <div class="regionrow" id="region-row"></div>
     <span class="flabel">Filter</span>
     <select class="filter" id="f-country"><option value="">Country</option></select>
     <select class="filter" id="f-industry"><option value="">Industry</option></select>
@@ -817,8 +887,10 @@
         </div>
       </div>
       <div class="map-hint">Click a country, then a city, to see who's there — scroll or pinch to zoom, drag to pan</div>
+      <div class="map-legend" id="map-legend"></div>
     </div>
   </section>
+  <section class="leaders" id="leaders" aria-label="Regional representatives"></section>
 
 </main>
 
@@ -902,6 +974,13 @@
   </div>
 </div>
 
+<div class="scrim" id="rmail-scrim" hidden>
+  <div class="panel find-link-panel" role="dialog" aria-modal="true" aria-label="Email a region">
+    <div class="panel-top"><strong id="rmail-title">Email a region</strong><button class="icon-btn" id="rmail-close" aria-label="Close">✕</button></div>
+    <div class="pbody" id="rmail-body"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
 <script>
 (function () {
@@ -936,6 +1015,130 @@
   function flagOf(c) { return (COUNTRY_META[c] && COUNTRY_META[c].flag) || "🌍"; }
   function shortOf(c) { return (COUNTRY_META[c] && COUNTRY_META[c].short) || c; }
 
+  // ---------- regions ----------
+  var REGIONS = [
+    { key: "Europe", cls: "r-eu", lead: "p0045", countries: ["Denmark","Estonia","Finland","France","Germany","Greece","Italy","Norway","Portugal","Sweden","Switzerland","Turkey","United Kingdom","Republic of Georgia","Republic of Armenia"] },
+    { key: "North & Latin America", cls: "r-am", lead: "p0025", countries: ["Canada","Mexico","Brazil","Chile","Peru","Guyana","United States of America"] },
+    { key: "Asia Pacific", cls: "r-ap", lead: "p0052", countries: ["India","Indonesia","Japan","Malaysia","Pakistan","Philippines","Singapore","Thailand","People's Republic of China","Republic of Korea","Republic of Kazakhstan"] },
+    { key: "Australia/Oceania", cls: "r-oc", lead: "p0159", countries: ["Australia","New Zealand"] },
+    { key: "Middle East", cls: "r-me", lead: "p0049", countries: ["Israel","Qatar","Saudi Arabia","United Arab Emirates"] },
+    { key: "Africa", cls: "r-af", lead: "p0001", countries: ["Angola","Ghana","Kenya","Namibia","Nigeria","South Africa"] }
+  ];
+  var SECRETARY_ID = "p0157";
+  var REGION_OF = {};
+  REGIONS.forEach(function (r) { r.countries.forEach(function (c) { REGION_OF[c] = r; }); });
+  function regionOfCountry(c) { return REGION_OF[(c || "").trim()] || null; }
+  function regionByKey(k) { return REGIONS.filter(function (r) { return r.key === k; })[0] || null; }
+  function personById(id) { return state.people.filter(function (x) { return x.id === id; })[0] || null; }
+  function regionMembers(r) { return state.people.filter(function (p) { var pr = regionOfCountry(p.country); return pr && pr.key === r.key; }); }
+
+  function renderRegionUI() {
+    var row = document.getElementById("region-row");
+    if (row) {
+      row.innerHTML = REGIONS.map(function (r) {
+        var n = regionMembers(r).length;
+        var active = state.filters.region === r.key;
+        return '<span class="rchip' + (active ? " active" : "") + '">' +
+          '<button class="rchip-main" data-region="' + esc(r.key) + '"><span class="rdot ' + r.cls + '"></span>' + esc(r.key) + ' <small>' + n + '</small></button>' +
+          '<button class="rchip-mail" data-rmail="' + esc(r.key) + '" title="Email everyone in ' + esc(r.key) + '" aria-label="Email everyone in ' + esc(r.key) + '">' + MAIL_ICON + '</button></span>';
+      }).join("");
+      row.querySelectorAll(".rchip-main").forEach(function (b) {
+        b.addEventListener("click", function () { setRegion(state.filters.region === b.dataset.region ? "" : b.dataset.region); });
+      });
+      row.querySelectorAll(".rchip-mail").forEach(function (b) {
+        b.addEventListener("click", function () { openRegionMail(b.dataset.rmail); });
+      });
+    }
+    var legend = document.getElementById("map-legend");
+    if (legend) legend.innerHTML = REGIONS.map(function (r) { return '<span><span class="rdot ' + r.cls + '"></span>' + esc(r.key) + '</span>'; }).join("");
+    renderLeaders();
+  }
+
+  function leaderBoxHtml(label, cls, p, sub, allKey, allCount) {
+    var wa = p.phone ? whatsappUrl(p.phone) : "";
+    return '<div class="leader-box ' + (cls || "") + '"><div class="lrole">' + (cls ? '<span class="rdot ' + cls + '"></span>' : "") + esc(label) + '</div>' +
+      '<div class="lwho">' + avatarHtml(p, 44) + '<div><button class="lname" data-open="' + esc(p.id) + '">' + esc(p.name) + '</button><div class="lsub">' + esc(sub) + '</div></div></div>' +
+      '<div class="lacts">' +
+        (p.email ? '<a class="icon-link" href="mailto:' + esc(p.email) + '" title="Email ' + esc(p.name) + '" aria-label="Email ' + esc(p.name) + '">' + MAIL_ICON + '</a>' : '') +
+        (wa ? '<a class="icon-link" href="' + esc(wa) + '" target="_blank" rel="noopener" title="WhatsApp ' + esc(p.name) + '" aria-label="WhatsApp ' + esc(p.name) + '">' + WHATSAPP_ICON + '</a>' : '') +
+        '<button class="lall" type="button" data-all="' + esc(allKey) + '" title="' + esc(allKey === "__reps" ? "Email the six regional reps" : "Email everyone in " + allKey) + '" aria-label="' + esc(allKey === "__reps" ? "Email the six regional reps" : "Email everyone in " + allKey) + '">' + PEOPLE_ICON + '<span class="n">' + allCount + '</span></button>' +
+      '</div></div>';
+  }
+
+  function renderLeaders() {
+    var el = document.getElementById("leaders");
+    if (!el || !state.people.length) return;
+    var boxes = REGIONS.map(function (r) {
+      var p = personById(r.lead);
+      return p ? leaderBoxHtml(r.key, r.cls, p, "Regional lead", r.key, regionMembers(r).length) : "";
+    }).join("");
+    var sec = personById(SECRETARY_ID);
+    el.innerHTML = '<h2>Regional representatives</h2><div class="leader-grid">' + boxes + '</div>' +
+      (sec ? '<div class="leader-grid sec">' + leaderBoxHtml("Class Secretary", "", sec, "Class Secretary", "__reps", repEmails().length) + '</div>' : '');
+    el.querySelectorAll("[data-open]").forEach(function (b) { b.addEventListener("click", function () { openDetail(b.dataset.open); }); });
+    el.querySelectorAll("[data-all]").forEach(function (b) {
+      b.addEventListener("click", function () { b.dataset.all === "__reps" ? openRepsMail() : openRegionMail(b.dataset.all); });
+    });
+  }
+  function repEmails() {
+    return REGIONS.map(function (r) { var p = personById(r.lead); return p && p.email ? p.email.trim() : ""; }).filter(Boolean);
+  }
+
+  function leaderBadgeHtml(p) {
+    var out = "";
+    REGIONS.forEach(function (r) { if (r.lead === p.id) out += '<span class="lead-badge"><span class="rdot ' + r.cls + '"></span>' + esc(r.key) + ' lead</span>'; });
+    if (p.id === SECRETARY_ID) out += '<span class="lead-badge">Class Secretary</span>';
+    return out;
+  }
+
+  function zoomToRegion() {
+    var r = regionByKey(state.filters.region);
+    if (!r) return;
+    var keys = r.countries.filter(function (c) { return CENTROIDS[c] && state.people.some(function (p) { return p.country === c; }); });
+    if (!keys.length) return;
+    mapView = fitBBox(bboxForKeys(keys, CENTROIDS), 70, 4);
+    applyMapTransform(false);
+  }
+  function setRegion(key) {
+    if (mapLevel === "city") { backToCountries(); }
+    state.filters.region = key;
+    if (!key) { mapView = { scale: 1, x: 0, y: 0 }; applyMapTransform(false); }
+    renderRegionUI(); renderMapDots(); renderGrid(); updateClearBtn();
+    if (key) zoomToRegion();
+  }
+
+  var rmailScrim = document.getElementById("rmail-scrim");
+  function closeRegionMail() { rmailScrim.hidden = true; }
+  document.getElementById("rmail-close").addEventListener("click", closeRegionMail);
+  rmailScrim.addEventListener("click", function (e) { if (e.target === rmailScrim) closeRegionMail(); });
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve) {
+      var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); resolve();
+    });
+  }
+  function openMailDialog(title, emails, who) {
+    var mailto = "mailto:?bcc=" + emails.map(encodeURIComponent).join(",");
+    document.getElementById("rmail-title").textContent = title;
+    var body = document.getElementById("rmail-body");
+    body.innerHTML = '<p class="rmail-body">' + emails.length + ' ' + who + '. Everyone goes in <strong>BCC</strong>, so addresses stay private.</p>' +
+      '<div class="rmail-actions"><a class="btn" id="rmail-open" href="' + esc(mailto) + '">Open in my email app</a>' +
+      '<button class="btn" id="rmail-copy" type="button">Copy addresses</button><span class="save-msg" id="rmail-msg"></span></div>' +
+      (mailto.length > 1800 ? '<p class="rmail-body" style="margin-top:12px">This is a long list, so if your email app does not open, use “Copy addresses” and paste them into BCC.</p>' : '');
+    document.getElementById("rmail-copy").addEventListener("click", function () {
+      copyText(emails.join(", ")).then(function () { document.getElementById("rmail-msg").textContent = "Copied " + emails.length + " addresses"; });
+    });
+    rmailScrim.hidden = false;
+  }
+  function openRegionMail(key) {
+    var r = regionByKey(key); if (!r) return;
+    var emails = regionMembers(r).map(function (p) { return (p.email || "").trim(); }).filter(Boolean);
+    openMailDialog("Email " + key, emails, "classmates in " + esc(key));
+  }
+  function openRepsMail() { openMailDialog("Email the regional reps", repEmails(), "regional representatives"); }
+
   var els = {
     search: document.getElementById("search"),
     fCountry: document.getElementById("f-country"),
@@ -963,7 +1166,7 @@
     panel: document.getElementById("panel")
   };
 
-  var state = { people: [], filters: { country: "", industry: "", section: "", livingGroup: "", q: "" }, myPid: null, myTok: null };
+  var state = { people: [], filters: { country: "", region: "", industry: "", section: "", livingGroup: "", q: "" }, myPid: null, myTok: null };
 
   var qp = new URLSearchParams(location.search);
   if (qp.get("pid") && qp.get("tok")) { state.myPid = qp.get("pid"); state.myTok = qp.get("tok"); }
@@ -1208,6 +1411,7 @@
     fillSelect(els.fIndustry, uniqueSortedBy(state.people, industryGroupFor), "Industry");
     fillSelect(els.fSection, uniqueSorted(state.people, "section"), "Section", "Section ");
     fillSelect(els.fLivingGroup, uniqueSorted(state.people, "livingGroup"), "Living Group");
+    renderRegionUI();
   }
   function uniqueSortedBy(arr, fn) {
     var set = {};
@@ -1373,7 +1577,8 @@
     declutter(items, 14);
     items.forEach(function (item) {
       var country = item.country;
-      var dot = makeDot(item, item.r, false);
+      var rg = regionOfCountry(country);
+      var dot = makeDot(item, item.r, false, rg && rg.cls);
       dot.setAttribute("aria-label", shortOf(country) + ": " + item.n + (item.n === 1 ? " classmate" : " classmates") + " — click to zoom in");
       dot.dataset.country = country;
       dot.addEventListener("click", function (ev) { ev.stopPropagation(); drillIntoCountry(country); });
@@ -1405,7 +1610,8 @@
       var key = item.key;
       var group = groups[key];
       var isActive = activeCityKey === key;
-      var dot = makeDot(item, item.r, isActive);
+      var rg = regionOfCountry(country);
+      var dot = makeDot(item, item.r, isActive, rg && rg.cls);
       dot.setAttribute("aria-label", group.label + ": " + item.n + (item.n === 1 ? " classmate" : " classmates"));
       dot.dataset.cityKey = key;
       dot.addEventListener("click", function (ev) { ev.stopPropagation(); openCityPopover(key, dot); });
@@ -1423,16 +1629,16 @@
     });
   }
 
-  function makeDot(pos, r, active) {
+  function makeDot(pos, r, active, regionCls) {
     var halo = document.createElementNS(SVG_NS, "circle");
     halo.setAttribute("cx", pos.x); halo.setAttribute("cy", pos.y); halo.setAttribute("r", r + 6);
     // Active state is set directly on each element (not via a CSS sibling
     // selector) so the highlight can never land on the wrong city's halo
     // regardless of DOM append order.
-    halo.setAttribute("class", "map-dot-halo" + (active ? " active" : ""));
+    halo.setAttribute("class", "map-dot-halo" + (regionCls ? " " + regionCls : "") + (active ? " active" : ""));
     var dot = document.createElementNS(SVG_NS, "circle");
     dot.setAttribute("cx", pos.x); dot.setAttribute("cy", pos.y); dot.setAttribute("r", r);
-    dot.setAttribute("class", "map-dot" + (active ? " active" : ""));
+    dot.setAttribute("class", "map-dot" + (regionCls ? " " + regionCls : "") + (active ? " active" : ""));
     dot.setAttribute("tabindex", "0");
     dot.setAttribute("role", "button");
     dot.halo = halo;
@@ -1607,6 +1813,7 @@
     mapView = { scale: 1, x: 0, y: 0 };
     applyMapTransform(false);
     renderMapDots();
+    zoomToRegion();
     if (state.filters.country) {
       state.filters.country = "";
       els.fCountry.value = "";
@@ -1671,6 +1878,7 @@
   // filter, since the map's own drill-down IS the country dimension.
   function passesNonCountryFilters(p) {
     var f = state.filters;
+    if (f.region) { var pr = regionOfCountry(p.country); if (!pr || pr.key !== f.region) return false; }
     if (f.industry && industryGroupFor(p) !== f.industry) return false;
     if (f.section && p.section !== f.section) return false;
     if (f.livingGroup && p.livingGroup !== f.livingGroup) return false;
@@ -1706,12 +1914,16 @@
   }
 
   function cardHtml(p) {
-    return '<button class="card" data-id="' + esc(p.id) + '">' +
+    var tags = [];
+    REGIONS.forEach(function (r) { if (r.lead === p.id) tags.push(r.key + " lead"); });
+    if (p.id === SECRETARY_ID) tags.push("Class Secretary");
+    return '<button class="card' + (tags.length ? " is-lead" : "") + '" data-id="' + esc(p.id) + '">' +
       avatarHtml(p, 52) +
       '<div class="meta">' +
         '<div class="name">' + esc(p.name) + '</div>' +
         '<div class="role">' + esc([p.title, p.org].filter(Boolean).join(" · ")) + '</div>' +
         '<div class="loc">' + flagOf(p.country) + ' ' + esc([p.city, shortOf(p.country)].filter(Boolean).join(", ")) + '</div>' +
+        (tags.length ? '<div class="lead-tag">★ ' + esc(tags.join(" · ")) + '</div>' : '') +
       '</div></button>';
   }
 
@@ -1736,14 +1948,14 @@
     });
   });
   els.clearBtn.addEventListener("click", function () {
-    state.filters = { country: "", industry: "", section: "", livingGroup: "", q: "" };
+    state.filters = { country: "", region: "", industry: "", section: "", livingGroup: "", q: "" };
     els.search.value = ""; els.fCountry.value = ""; els.fIndustry.value = ""; els.fSection.value = ""; els.fLivingGroup.value = "";
     backToCountries();
-    renderGrid(); updateClearBtn();
+    renderRegionUI(); renderGrid(); updateClearBtn();
   });
   function updateClearBtn() {
     var f = state.filters;
-    var any = f.country || f.industry || f.section || f.livingGroup || f.q;
+    var any = f.country || f.region || f.industry || f.section || f.livingGroup || f.q;
     els.clearBtn.classList.toggle("show", !!any);
   }
 
@@ -1767,6 +1979,7 @@
 
   function tagHtml(icon, text) { return text ? '<span class="tag">' + icon + " " + esc(text) + "</span>" : ""; }
 
+  var PEOPLE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
   var MAIL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>';
   var LINKEDIN_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2ZM8 19H5v-9h3ZM6.5 8.7A1.7 1.7 0 1 1 8.2 7a1.7 1.7 0 0 1-1.7 1.7ZM19 19h-3v-4.6c0-1.1 0-2.5-1.5-2.5s-1.8 1.2-1.8 2.4V19h-3v-9h2.9v1.3h.04a3.2 3.2 0 0 1 2.88-1.6c3.1 0 3.66 2 3.66 4.7Z"/></svg>';
   function linkedinUrl(v) {
@@ -1815,6 +2028,7 @@
       '<div class="view-slot">' +
       '<div class="phead">' + avatarHtml(p, 84) +
         '<div><div class="headtop"><h3>' + esc(p.name) + '</h3>' + contactIconsHtml(p) + '</div>' +
+        (leaderBadgeHtml(p) ? '<div class="tagrow" style="margin:6px 0 4px">' + leaderBadgeHtml(p) + '</div>' : '') +
         '<div class="role">' + esc(p.title || "") + '</div>' +
         (p.org ? '<div class="org">' + esc(p.org) + '</div>' : '') +
         '</div></div>' +
