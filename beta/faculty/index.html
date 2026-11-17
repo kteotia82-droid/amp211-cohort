@@ -1132,7 +1132,7 @@ var FACULTY = [{"name": "Cynthia Montgomery", "fid": 6516, "role": "Faculty Chai
     if (!el) return;
     var cards = FACULTY.map(function (f) {
       return '<div class="fac-card">' +
-        '<div class="fac-row"><div class="ftxt"><div class="fac-name">Prof. ' + esc(f.name) + '</div><div class="fac-sub">' + esc(f.role) + ' · ' + esc(f.office) + '<br>' + esc(intl(f.phone)) + '</div></div>' + facActs(f.name, f.phone, f.email) + '</div>' +
+        '<div class="fac-row"><div class="ftxt"><div class="fac-name"><a class="fac-link" href="https://www.hbs.edu/faculty/Pages/profile.aspx?facId=' + f.fid + '" target="_blank" rel="noopener" title="' + esc(f.name) + ' on hbs.edu">Prof. ' + esc(f.name) + ' <span aria-hidden="true">\u2197</span></a></div><div class="fac-sub">' + esc(f.role) + ' · ' + esc(f.office) + '<br>' + esc(intl(f.phone)) + '</div></div>' + facActs(f.name, f.phone, f.email) + '</div>' +
         '<hr class="fac-sep">' +
         '<div class="fac-row asst"><div class="ftxt"><div class="fac-name">' + esc(f.asst.name) + '</div><div class="fac-sub">Assistant · ' + esc(intl(f.asst.phone)) + '</div></div>' + facActs(f.asst.name, f.asst.phone, f.asst.email) + '</div>' +
         '</div>';
